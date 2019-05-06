@@ -1,0 +1,64 @@
+//选用模板
+		$('#selectproc-btn').bind('click',function(){
+			var root_node = $('#procplan-tree').tree('getRoot');
+			var application_id = root_node.id;
+            //alert(application_id.toString());
+
+            //取得ID
+            //var procplan = $('#processplan-cmb').combobox('getValue'); 
+            //取得文本
+            var procplan = $('#processplan-cmb').combobox('getText'); 
+            //alert(procplan.toString());
+
+            if (root_node.attributes){
+                var asmName = root_node.attributes.assemblyName;
+                if (asmName != "" && asmName != null && asmName != undefined){
+                    $.messager.confirm("警告", "当前工艺路线已分配物料, 变更后需要重新分配物料. 确定要变更吗?", function (r) {
+                        if (r) {
+                            $('#component_list').datagrid('loadData', {total:0, rows:[]}); 
+                            $('#fixer_list').datagrid('loadData', {total:0, rows:[]}); 
+                            $('#comment_list').datagrid('loadData', {total:0, rows:[]}); 
+                            $('#risks_list').datagrid('loadData', {total:0, rows:[]});
+                            
+                            var procplandatas = RetrieveProcPlanDatas(procplan, application_id);
+
+                            if (procplandatas != null && procplandatas.length > 0)
+                            {
+                                //$('#procplan-tree').tree('reload'); 
+                                $('#procplan-tree').tree('loadData',JSON.parse(procplandatas));
+                            }
+                            else
+                            {
+                                //$('#procplan-tree').tree('reload');       
+                            }
+                        }
+                    });
+                }
+                else {
+                    var procplandatas = RetrieveProcPlanDatas(procplan, application_id);
+
+                    if (procplandatas != null && procplandatas.length > 0)
+                    {
+                        //$('#procplan-tree').tree('reload'); 
+                        $('#procplan-tree').tree('loadData',JSON.parse(procplandatas));
+                    }
+                    else
+                    {
+                        //$('#procplan-tree').tree('reload');       
+                    }                    
+                }
+            }
+            else {
+                var procplandatas = RetrieveProcPlanDatas(procplan, application_id);
+
+                if (procplandatas != null && procplandatas.length > 0)
+                {
+                    //$('#procplan-tree').tree('reload'); 
+                    $('#procplan-tree').tree('loadData',JSON.parse(procplandatas));
+                }
+                else
+                {
+                    //$('#procplan-tree').tree('reload');       
+                }
+            }
+		});
