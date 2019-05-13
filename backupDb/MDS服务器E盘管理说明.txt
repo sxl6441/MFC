@@ -1,0 +1,21 @@
+管理员：胡荣恒 h00167366  操作员：曹攀 c00205403
+
+E盘作用：用于存储备份文件（共6个文件）。
+
+MDS_10.68.130.81_Backup：MDS与捷豹数据库本地备份位置，用于恢复MDS与捷豹数据库。
+文件说明：带POW的备份文件为捷豹备份文件，不含POW的备份文件为MDS备份文件。
+如：MDS_BACKUP_POW20170113.bak.rar为捷豹备份文件。
+如：MDS_BACKUP20161201.bak.rar为MDS备份文件。
+
+MDS_10.68.130.81_Backup_to_10.68.130.82: MDS与捷豹数据库异地备份位置，用于恢复MDS与捷豹数据库。
+文件说明：带POW的备份文件为捷豹备份文件，不含POW的备份文件为MDS备份文件。
+如：MDS_BACKUP_POW20170113.bak.rar为捷豹备份文件。
+如：MDS_BACKUP20161201.bak.rar为MDS备份文件。
+
+backup.bat：备份策略文件。
+
+bakupMDS.sql：MDS备份执行文件。
+
+bakupMDSPOW.sql：Jaguar备份执行文件。
+
+捷豹源代码：IP（知识产权），用于后期BUG更改、功能添加等。
