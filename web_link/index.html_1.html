@@ -1,1 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh">
 
+<head>
+    <meta charset="utf-8">
+    <title>EasyUI Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 1 jQuery的js包 -->
+    <script type="text/javascript" src="jquery_easyui/jquery.min.js"></script>
+
+    <!-- 2、CSS资源 -->
+    <link rel="stylesheet" type="text/css" href="jquery_easyui/themes/default/easyui.css">
+
+    <!-- 3、图片包 -->
+    <link rel="stylesheet" type="text/css" href="jquery_easyui/themes/icon.css">
+
+    <!-- 4、easyui的js包 -->
+    <script type="text/javascript" src="jquery_easyui/jquery.easyui.min.js"></script>
+
+    <!-- 5、本地语言 -->
+    <script type="text/javascript" src="jquery_easyui/locale/easyui-lang-zh_CN.js"></script>
+
+    <!-- PTC weblink -->
+    <script type="text/javascript" src="jscript/pfcUtils.js"></script>
+    <script type="text/javascript" src="jscript/pfcWebLink.js"></script>
+    
+    <script type="text/javascript" src="jscript/datagrid_paging.js"></script>
+    <script type="text/javascript" src="jscript/treegrid_dnd.js"></script>
+    <style>
+        /*控制仿真工具集的显示*/
+        .toolhide{
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="easyui-layout" data-options="fit:'true'">
+    <!--<h2>JQuery easyUI Layout</h2>-->
+
+    <!--<div id="cc" class="easyui-layout" data-options="fit:'true'" style="width:600px;height:500px;"> -->
+    <div id="top-panel" class="easyui-panel" data-options="region:'north', split:false" border="true" style="margin:0px 0px;padding:5px;width:100%;height:45px;background:#fffff0;">
+        <a>工艺路线模板：</a>
+        <input class="easyui-combobox" id="processplan-cmb" name="cmb_demo" data-options="required:false, editable:false, panelHeight:'auto', panelMaxHeight:170">
+        
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="selectproc-btn" border="true" data-options="iconCls:'icon-treelook',plain:true">选用模板</a>        
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="importmodel-btn" border="true" data-options="iconCls:'icon-addref',plain:true">载入模型</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="saveproc-btn"  border="true" data-options="iconCls:'icon-save',plain:true">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="components-btn" border="true" data-options="iconCls:'icon-details',plain:true">未分配物料</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="rehabilitate-btn" border="true" data-options="iconCls:'icon-details',plain:true">恢复工艺路线装配</a>
+        <!-- <input class="easyui-textbox" id="connector-txt" name="message_demo" data-options="multiline:true" style="height:60px"> -->
+    </div>
+    <!--<div data-options="region:'south',split:true" style="height:50px;"></div>--> <!--title:'South Title', -->
+    <!-- <div data-options="region:'east',title:'East',split:true" style="width:100px;"></div> -->
+    <div id="left-panel" class="easyui-panel" data-options="region:'west',title:'工艺路线树',split:true" style="width:180px;">
+        <ul id="procplan-tree"  class="easyui-tree" data-options="url:'pplan_tree.json',
+                                                                  method:'get',
+                                                                  animate:true,
+                                                                  dnd:true,
+                                                                  checkbox:true,
+                                                                  onlyLeafCheck:true,              
+                                                                  onContextMenu: function(e,node){
+                                                                        e.preventDefault();
+                                                                        $(this).tree('select',node.target)
+                                                                        if ($(this).tree('isLeaf',node.target)){
+                                                                            if(node.id !== '8_29' && node.id !== '11_36' && node.id !== '11_37' && node.id !== '12_38' && node.id !== '12_39'){
+                                                                                $('.toolall,.toolall-sep').addClass('toolhide');
+                                                                            }else if(node.id == '8_29'){
+                                                                                $('.toolall,.toolall-sep').removeClass('toolhide');
+                                                                                $('#mnu-simulate1-1').addClass('toolhide');
+                                                                                $('#mnu-simulate1-2').addClass('toolhide');
+                                                                                $('#mnu-simulate2-1').addClass('toolhide');
+                                                                                $('#mnu-simulate2-2').addClass('toolhide');
+                                                                                $('#mnu-simulate3').removeClass('toolhide');
+                                                                            }else if(node.id == '11_36'|| node.id == '11_37'){
+                                                                                $('.toolall,.toolall-sep').removeClass('toolhide');
+                                                                                $('#mnu-simulate1-1').removeClass('toolhide');
+                                                                                $('#mnu-simulate1-2').removeClass('toolhide');
+                                                                                $('#mnu-simulate2-1').addClass('toolhide');
+                                                                                $('#mnu-simulate2-2').addClass('toolhide');
+                                                                                $('#mnu-simulate3').addClass('toolhide');
+                                                                            }else if(node.id == '12_38'|| node.id == '12_39'){
+                                                                                $('.toolall,.toolall-sep').removeClass('toolhide');
+                                                                                $('#mnu-simulate1-1').addClass('toolhide');
+                                                                                $('#mnu-simulate1-2').addClass('toolhide');
+                                                                                $('#mnu-simulate2-1').removeClass('toolhide');
+                                                                                $('#mnu-simulate2-2').removeClass('toolhide');
+                                                                                $('#mnu-simulate3').addClass('toolhide');
+                                                                            }
+                                                                            $('#trmm').menu('show',{
+                                                                                        left: e.pageX,
+                                                                                        top: e.pageY});
+                                                                        }
+                                                                        else if ($(this).tree('getParent',node.target) != null){
+                                                                            createNodeMenu('#traddmm');
+                                                                            $('#traddmm').menu('show',{
+                                                                                        left: e.pageX,
+                                                                                        top: e.pageY});
+                                                                        }
+                                                                  }">
+        </ul>
+    </div>
+    <div id="right-panel" class="easyui-panel" data-options="region:'center'" style="padding:1px;background:#fffff0;">
+        <!-- selectOnCheck:false, checkOnSelect:false, 行与复选框分离-->
+        <table id="component_list" class="easyui-datagrid" style="height:40%" title="物料成员" data-options="
+                                                                                       fitColumns:false,
+                                                                                       fit:false,                  
+                                                                                       collapsible:true,
+                                                                                       collapsed:false,                  
+                                                                                       rownumbers:true,
+                                                                                       singleSelect:false,
+                                                                                       remoteSort:false, 
+                                                                                       multiSort: true,
+                                                                                       toolbar:'#findcomp_bar',                  
+                                                                                       method:'get',
+                                                                                       onLoadSuccess:onLoadSuccess,
+                                                                                       onRowContextMenu:onRowContextMenu,
+                                                                                       padding:0.0,
+                                                                                       nowrap:false,
+                                                                                       pagination:true,
+                                                                                       pageSize:50,
+                                                                                       pageList:[10,50,100,200,500]">
+            <!--<thead>
+                <tr>
+                    <th data-options="field:'compchk',checkbox:true"></th>
+                    <th data-options="field:'compname',resizable:true,width:150,editor:'textbox'">物料编码</th>
+                    <th data-options="field:'bomcode',resizable:true,width:100,editor:'textbox'">位置号</th>
+                    <th data-options="field:'btside',resizable:true,width:100,editor:'textbox',sortable:true">BT面</th>
+                    <th data-options="field:'path',resizable:true,width:150,editor:'textbox',hidden:true">path</th>
+                </tr>
+            </thead>-->
+        </table>
+        <table id="fixer_list" class="easyui-datagrid" style="height:30%" title="工装清单" data-options="
+                                                                                       rownumbers:true,
+                                                                                       fit:false, 
+                                                                                       collapsible:true,
+                                                                                       collapsed:false,              
+                                                                                       singleSelect:false,
+                                                                                       remoteSort:false,
+                                                                                       multiSort: true,              
+                                                                                       toolbar:'#fixer_bar',
+                                                                                       onRowContextMenu:onRowContextMenuFxmm, 
+                                                                                       selectOnCheck:false,
+                                                                                       checkOnSelect:false,         
+                                                                                       method:'get',
+                                                                                       padding:0.0,
+                                                                                       nowrap:false,
+                                                                                       pagination:false,
+                                                                                       pageSize:50,
+                                                                                       pageList:[50,100,200,500]">
+            <!--<thead>
+                <tr>
+                    <th data-options="field:'fixchk',checkbox:true"></th>
+                    <th data-options="field:'fixname',resizable:true,width:150,editor:'textbox'">工装编码</th>
+                    <th data-options="field:'fixbtside',resizable:true,width:150,editor:{type: 'combobox', options: {data: Address, valueField: 'value', textField: 'text'}}">BT面</th>
+                    <th data-options="field:'fixpath',resizable:true,width:150,editor:'textbox',hidden:true">path</th>
+                </tr>
+            </thead> -->
+        </table>
+        <table id="comment_list" class="easyui-datagrid" style="height:30%" title="工序注释" data-options="
+                                                                                       rownumbers:true,
+                                                                                       fit:false,                 
+                                                                                       collapsible:true, 
+                                                                                       collapsed:true,                 
+                                                                                       singleSelect:true,
+                                                                                       toolbar:'#comment_bar',
+                                                                                       method:'get',
+                                                                                       onLoadSuccess:onLoadSuccess,
+                                                                                       padding:0.0,
+                                                                                       nowrap:false,
+                                                                                       pagination:false,
+                                                                                       pageSize:50,
+                                                                                       pageList:[50,100,200,500]">
+            <thead>
+                <tr>
+                    <th data-options="field:'comment',resizable:true,width:380,editor:'textbox'">注释内容</th>
+                </tr>
+            </thead>
+        </table>
+        <table id="risks_list" class="easyui-datagrid" style="height:30%" title="风险项信息" data-options="
+                                                                                       rownumbers:true,
+                                                                                       fit:false,                
+                                                                                       collapsible:true,
+                                                                                       collapsed:false,
+                                                                                       singleSelect:true,
+                                                                                       method:'get',
+                                                                                       toolbar:'#risks_bar',
+                                                                                       onLoadSuccess:onLoadSuccess,
+                                                                                       padding:0.0,
+                                                                                       nowrap:false,
+                                                                                       pagination:false,
+                                                                                       pageSize:50,
+                                                                                       pageList:[50,100,200,500]">
+            <thead>
+                <tr>
+                    <th data-options="field:'name',resizable:true,width:120,editor:'textbox'">编码</th>
+                    <th data-options="field:'bomcode',resizable:true,width:100,editor:'textbox'">位置号</th>
+                    <th data-options="field:'content',resizable:true,width:150,editor:'textbox'">风险内容</th>
+                </tr>
+            </thead>
+        </table>        
+    </div>
+    
+	<div id="findcomp_bar" style="height:auto">	
+        <!--iconCls:'icon-search', -->
+        物料编码:<input class="easyui-textbox" id="cFindName" data-options="prompt:'请输入物料编码'" style="width:120px" type="text" /> 
+        位置号:<input class="easyui-textbox" id="cFindCode" data-options="prompt:'请输入位置号'" style="width:80px" type="text" />
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="c_find_btn" data-options="iconCls:'icon-search',plain:true">搜索</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="c_dispmore_btn" data-options="iconCls:'icon-more',plain:true">显示全部</a>
+	</div>
+    
+	<div id="fixer_bar" style="height:auto">		
+		<a href="javascript:void(0)" class="easyui-linkbutton" id="f_append_btn" data-options="iconCls:'icon-add',plain:true">组装工装</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="f_redefine_btn" data-options="iconCls:'icon-edit',plain:true">编辑工装</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" id="f_remove_btn" data-options="iconCls:'icon-remove',plain:true">移除工装</a>
+        <!-- <a href="javascript:void(0)" class="easyui-linkbutton" id="f_refresh_btn" data-options="iconCls:'icon-reload',plain:true">刷新显示</a> -->
+	</div> 
+    
+    <div id="comment_bar" style="height:auto">		
+		<a href="javascript:void(0)" class="easyui-linkbutton" id="add_btn" data-options="iconCls:'icon-add',plain:true">新增注释</a>
+		<!--<a href="javascript:void(0)" class="easyui-linkbutton" id="create_btn" data-options="iconCls:'icon-createnote',plain:true">创建注释特征</a>-->	
+        <a href="javascript:void(0)" class="easyui-linkbutton" id="remove_note_btn" data-options="iconCls:'icon-remove',plain:true">移除注释</a>	
+	</div> 
+    
+	<div id="risks_bar" style="height:auto">		
+		<a href="javascript:void(0)" class="easyui-linkbutton" id="append_btn" data-options="iconCls:'icon-add',plain:true">增加</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" id="remove_btn" data-options="iconCls:'icon-remove',plain:true">移除</a>	
+	</div>     
+    
+    //右键菜单-重新分配器件
+    <div id="gdmm" class="easyui-menu" style="width:140px;">  <!-- data-options="onClick:menuDesignated()" -->
+        <div>test menu</div>
+    </div>
+    
+    //右键菜单-重新分配工装
+    <div id="fxmm" class="easyui-menu" style="width:140px;">  <!-- data-options="onClick:menuDesignated()" -->
+        <div>test menu</div>
+    </div>    
+    
+    //右键菜单-工艺路线树
+    <div id="trmm" class="easyui-menu" style="width:140px;"> 
+        <div onclick="displayMenu()">显示前面的工序</div>
+        <div onclick="blankMenu()">隐藏前面的工序</div>
+        <div onclick="blankAllMenu()">隐藏所有工序</div>
+        <div class="menu-sep"></div>
+        <div onclick="removeMenu()">移除工序</div>        
+        <div class="menu-sep"></div> 
+        <div><span>干涉检查</span>
+            <div style="width:120px;">
+                <div onclick="collisionMenu_1()">工装与器件</div>
+                <div id="mnu-comp" onclick="collisionMenu_2()">器件与器件</div>
+            </div>
+        </div>        
+        <div class="menu-sep"></div>
+        <div class="toolall"><span>仿真工具集</span>
+            <div style="width:130px;">
+                <div id="mnu-simulate1-1" onclick="simulationMenu_1_1()">选波焊接仿真T面</div>
+                <div id="mnu-simulate1-2" onclick="simulationMenu_1_2()">选波焊接仿真B面</div>
+                <div id="mnu-simulate2-1" onclick="simulationMenu_2_1()">压接焊接仿真T面</div>
+                <div id="mnu-simulate2-2" onclick="simulationMenu_2_2()">压接焊接仿真B面</div>
+                <div id="mnu-simulate3" onclick="simulationMenu_3()">分板焊接仿真</div>
+            </div>
+        </div> <!-- omit -->
+        <div class="menu-sep toolall-sep"></div>
+        <div onclick="exportMenu()">导出step格式</div>        
+        <div class="menu-sep"></div>
+        <div onclick="optionsMenu()">设置模板</div> <!-- -->        
+    </div>
+    
+    //右键菜单-工艺路线树插入节点
+    <div id="traddmm" class="easyui-menu" style="width:140px;">
+        <!--<div id="add_treenode"><span>插入工序节点</span>
+            <!--
+            <div style="width:120px;">
+                <div>工序节点</div>
+            </div>
+        </div>
+        <div class="menu-sep"></div> 
+        <div id="rmv_treenode" onclick="removeTreeND">移除工序节点</div> -->
+    </div>
+    
+    //右键菜单-工艺路线插入节点
+    <div id="tdaddmm" class="easyui-menu" style="width:140px;">
+        <!--<div id="add_treenode"><span>插入工序节点</span>
+            <!--
+            <div style="width:120px;">
+                <div>工序节点</div>
+            </div>
+        </div>
+        <div class="menu-sep"></div>  -->
+        <div id="rmv_treenode">移除工序节点</div>
+    </div>
+    
+    <div id="ReceiveFeedBackDialog" class="easyui-dialog" closed=true title="查看干涉检查结果" style="width:600px;height:380px;display:none;padding:1px;overflow-x:hidden;">
+        <!--<iframe scrolling="auto" id='openReceiveFeedBack' name="openReceiveFeedBack" frameborder="0"  src="" style="width:100%;height:98%;"> buttons="#dlg-buttons" -->
+            <table id="result_list" class="easyui-datagrid" style="width:100%;height:100%;" ></table>     
+        <!--</iframe> -->
+    </div> 
+    
+    <div id="dlg-buttons" style="height:auto">
+        <a href="#" class="easyui-linkbutton" onclick="refreshData();">Refresh</a><!---->
+        <a href="#" class="easyui-linkbutton" onclick="closeDialog();">Close</a>
+    </div> 
+    
+    <div id="SetsTemplateDialog" class="easyui-dialog" closed=true title="工艺路线模板设置" style="width:600px;height:400px;display:none;padding:1px;overflow-x:hidden;">
+        <!-- buttons="#dlg-buttons" -->
+            <table id="templates_list" class="easyui-treegrid" style="width:100%;height:100%;" data-options="toolbar:'#template_bar'"></table>     
+    </div>  
+    
+    <div id="template_bar" style="height:auto">	
+        <a id="dlg-header">工艺路线模板：</a>
+        <input class="easyui-combobox" id="pplantmp-cmb" name="cmb_pplantmp" data-options="required:false, editable:false, panelHeight:'auto', panelMaxHeight:170">
+        <a href="#" class="easyui-linkbutton" id="pplantmp-selbtn" border="true" data-options="iconCls:'icon-treelook',plain:true">查看模板</a>
+        <a href="#" class="easyui-linkbutton" id="pplantmp-savebtn" border="true" data-options="iconCls:'icon-save',plain:true">存储模板</a>
+		<!-- <a href="#" class="easyui-linkbutton" id="pplantmp_addbtn" border="true" data-options="iconCls:'icon-add',plain:true">增加</a>	-->
+		<a href="#" class="easyui-linkbutton" id="pplantmp_delbtn" border="true" data-options="iconCls:'icon-deleteitem',plain:true">删除模板</a>
+	</div>
+    
+    <script type="text/javascript">
+        var pgrid = undefined;
+        var editIndex = undefined;
+        var editField = undefined;
+        
+        var editComment = false;
+        var editRisks = false;
+        
+        //用于物料搜索功能
+        var g_compdatas = null;
+        
+        $('#procplan-tree').tree({
+            onLoadSuccess: function(node, data){				
+                //var application_id = data[0].id;
+                //alert(application_id.toString());
+                //LoadToolkitDll(application_id);
+                //var jsonobj = '';
+                //$.each(data,function(i){
+                //  jsonobj += data[i].id+' ' + data[i].text + '\n';
+                //});
+                //alert(jsonobj);
+                
+                var fnode = $('#procplan-tree').tree('find', data[0].id);
+                //alert(fnode.id);
+
+                if (fnode != null){
+                    var subnodes = $('#procplan-tree').tree('getChildren',fnode.target);
+                    $.each(subnodes,function(i){
+                        if (subnodes[i].attributes){
+                            var layerID = undefined;
+                            var fixtureID = undefined;
+                            if (subnodes[i].attributes.layerID){
+                                layerID = subnodes[i].attributes.layerID;
+                            }
+                            if (subnodes[i].attributes.fixtureID){
+                                fixtureID = subnodes[i].attributes.fixtureID;
+                            }                            
+                            if($('#procplan-tree').tree('isLeaf',subnodes[i].target)){
+                                if ((layerID != undefined && layerID != "") && (fixtureID != undefined && fixtureID != "")){
+                                    $('#procplan-tree').tree('update', {target:subnodes[i].target, iconCls:'icon-nodecompfixture'});
+                                }
+                                else if (layerID != undefined && layerID != ""){
+                                    $('#procplan-tree').tree('update', {target:subnodes[i].target, iconCls:'icon-nodecmpcheck'});
+                                }
+                                else if (fixtureID != undefined && fixtureID != ""){
+                                    $('#procplan-tree').tree('update', {target:subnodes[i].target, iconCls:'icon-nodefixturecheck'});
+                                }
+                            }
+                        }
+                    });
+                }
+            },            
+            onClick: function(node){    
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                editComment = false;
+                editRisks = false;
+                
+				if($('#procplan-tree').tree('isLeaf',node.target)){   
+                    //For test
+                    //$('#procplan-tree').tree('update', {target:node.target, iconCls:'icon-nodecmpcheck'});
+                    var s = node.id;
+                    //alert(s); 
+                    
+                    //Retrieves components to display in datagrid                                        
+                    g_compdatas = RetrieveAsmcomponents(node.id, application_id);
+                    
+                    if(g_compdatas != null  && g_compdatas.length > 0){
+                        $('#component_list').datagrid({loadFilter:pagerFilter}).datagrid('loadData',JSON.parse(g_compdatas));
+                        //$('#procplan-tree').tree('check',node.target);
+                        $('#procplan-tree').tree('update', {target:node.target, checked:true});
+                    }
+                    else {
+                        $('#component_list').datagrid('loadData', {total:0, rows:[]});
+                    }
+                    
+                    //Retrieves fixers to display in datagrid 
+                    var fixers = RetrieveFixercomponents(node.id, application_id);
+                    if(fixers != null  && fixers.length > 0){
+                        $('#fixer_list').datagrid({loadFilter:pagerFilter}).datagrid('loadData',JSON.parse(fixers));
+                        //$('#procplan-tree').tree('check',node.target);
+                         $('#procplan-tree').tree('update', {target:node.target, checked:true});
+                        
+//                        //Display all fixers.
+//                        var row_data =  $('#fixer_list').datagrid('getData');
+//                        if (row_data.total > 0){
+//                            for (var i=0; i<row_data.total; ++i){
+//                                var rowIndex = $('#fixer_list').datagrid('getRowIndex', row_data.rows[i]);
+//                                $('#fixer_list').datagrid('checkRow', rowIndex); 
+//                            }
+//                        }                         
+                    }
+                    else {
+                        $('#fixer_list').datagrid('loadData', {total:0, rows:[]});
+                    }
+
+                    //只有压接显示上下模
+                    if(node.id == "12_38" || node.id == "12_39"){
+                        $('#fixer_list').datagrid('showColumn', 'fixupdown');
+                    }else{
+                        $('#fixer_list').datagrid('hideColumn', 'fixupdown');
+                    }
+                    
+                    //Retrieves note comments and risks content
+                    if (node.attributes){
+                        //note comments
+                        var note_text = null;
+                        var note_attr = node.attributes.noteContent;
+                        if (note_attr != "" && note_attr != null && note_attr != undefined){
+                            var note_tmp = note_attr.replace(/\</g, '{"comment":"');//加g就是替换所有的<号
+                            var note_tmp1 = note_tmp.replace(/\>/g, '"}');//加g就是替换所有的>号
+                            note_text= '[' + note_tmp1 + ']';
+                        }
+                        
+                        if(note_text != null && note_text.length > 0){
+                           $('#comment_list').datagrid('loadData',JSON.parse(note_text)); 
+                        }
+                        else {
+                            $('#comment_list').datagrid('loadData', {total:0, rows:[]});
+                        }
+                        //risks content
+                        var risk_text = null;
+                        var risk_attr = node.attributes.riskContent;
+                        if (risk_attr != "" && risk_attr != null && risk_attr != undefined){
+                            var text_tmp = risk_attr.replace(/\@/g, '{"name":"');//加g就是替换所有的@号
+                            var text_tmp1 = text_tmp.replace(/\$/g, '"bomcode":"');//加g就是替换所有的$号
+                            var text_tmp2 = text_tmp1.replace(/\</g, '"content":"');//加g就是替换所有的<号
+                            var text_tmp3 = text_tmp2.replace(/\~/g, '",');//加g就是替换所有的~号
+                            var note_tmp = text_tmp3.replace(/\>/g, '"}');//加g就是替换所有的>号
+                            risk_text= '[' + note_tmp + ']';
+                        }
+                        
+                        if(risk_text != null && risk_text.length > 0){
+                           $('#risks_list').datagrid('loadData',JSON.parse(risk_text)); 
+                        }
+                        else {
+                            $('#risks_list').datagrid('loadData', {total:0, rows:[]});
+                        }                        
+                    }
+                    else {
+                        $('#risks_list').datagrid('loadData', {total:0, rows:[]});
+                    }
+                    
+                    if(root_node) {
+                        var asm_name = "";
+                        if (root_node.attributes){
+                            asm_name = root_node.attributes.assemblyName;
+                        }
+                        //alert("attributes.assemblyName: " + asm_name.toString());                            
+                        $('#procplan-tree').tree('update', {target:root_node.target,
+                                                            attributes:{"assemblyName":asm_name.toString(),
+                                                                        "layerName":node.id.toString()}});                        
+                    } 
+                    UnhighlightAllAsmcomponent(application_id);
+                }
+            },
+            onCheck: function(node, checked){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                if($('#procplan-tree').tree('isLeaf',node.target)){
+                   var checkedID = node.id.toString();
+                   DisplayAsmcomponents(checkedID, checked, application_id);
+                    
+                   if (!checked){
+                       if (root_node.attributes.layerName == checkedID)
+                           $('#fixer_list').datagrid('uncheckAll');
+                       
+                       //Blank/Display all fixers.
+                       checkedID += "_GZC";
+                       DisplayAsmcomponents(checkedID, checked, application_id); 
+                                              
+                       //$('#component_list').datagrid('loadData', {total:0, rows:[]}); 
+                       //$('#procplan-tree').tree('select',node.target);
+                       //$('#fixer_list').datagrid('loadData', {total:0, rows:[]});
+                       //$('#comment_list').datagrid('loadData', {total:0, rows:[]});
+                       //$('#risks_list').datagrid('loadData', {total:0, rows:[]});
+                   }
+               }
+            }
+        });
+        
+        //, data:[{ppid:'1', pptext:'text1'}, {ppid:'2', pptext:'text2', selected:true}, {ppid:'3', pptext:'text3'}]
+        $('#processplan-cmb').combobox({
+            url:'pplan_catalogs.json',
+            valueField:'ppid',
+            textField:'pptext'
+        });   
+                
+        //Combobox formatter in datagrid
+        var BTData = [{"btsID":1, "btsText":"T"}, {"btsID":2, "btsText":"B"}];
+        
+        function unitformatter(value, rowData, rowIndex) {
+            if (value == 0) {
+                return;
+            }
+
+            for (var i = 0; i < BTData.length; i++) {
+                if (BTData[i].btsID == value) {
+                    return BTData[i].btsText;
+                }
+            }
+        }
+        
+        var upData = [{"upID":1, "upText":"上"}, {"upID":2, "upText":"下"}];
+        
+        function unitupformatter(value, rowData, rowIndex) {
+            if (value == 0) {
+                return;
+            }
+
+            for (var i = 0; i < upData.length; i++) {
+                if (upData[i].upID == value) {
+                    return upData[i].upText;
+                }
+            }
+        }
+        
+        //Datagrid 操作
+        $('#component_list').datagrid({
+            fitColumns:false,
+            //fit:true,
+            collapsible:true,//定义面板是否可以折叠
+            columns: [[
+                {field:'compchk', checkbox:true},
+                {field:'compname', resizable:true, title: '物料编码', width: 150, sortable:true, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}},
+                {field:'bomcode', resizable:true, title: '位置号', width: 120, sortable:true, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}}, //, options: { required: true }
+                {field:'path', resizable:true, hidden:true, title: 'path', width: 100, align: 'center', editor: {type: 'text'}}, //, options: { required: true } 
+                {field:'btside', resizable:true, title: 'BT面', width: 100, align: 'left', formatter: unitformatter, editor:{type: 'text'}, sortable:true, sorter:function(a,b) {return (a>b?1:-1);}}
+            ]],
+            //idField:"bomcode",
+            sortName: "btside",
+            sortOrder:"asc",
+            onClickCell:function(rowIndex, pckField, value) {
+                pgrid = $(this);
+                editField = pckField;
+            },
+            onDblClickRow:function (rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.path;
+                //alert(sPath); 
+                                  
+                if (sPath != null && sPath != undefined){
+                    ZoomWindowByAsmcomponent(sPath, application_id);
+                    $(this).datagrid('selectRow', rowIndex);
+                    
+                    var selrows =  $(this).datagrid('getSelections');
+                    //alert(selrows.length);
+                    
+                    if (selrows != null && selrows.length > 1){
+                        for (var i=0; i<selrows.length; ++i) {
+                            var sPath = selrows[i].path;
+
+                            if (sPath != null && sPath != undefined)
+                                HighlightAsmcomponent(sPath, application_id); 
+                        } 
+                    }
+                }
+            },
+            onSelect:function(rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.path;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    HighlightAsmcomponent(sPath, application_id);     
+            },
+            onUnselect:function(rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.path;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    UnhighlightAsmcomponent(sPath, application_id);     
+            },
+            onCheckAll:function(rows) {
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                for (var i=0; i<rows.length; ++i) {
+                    var sPath = rows[i].path;
+                    
+                    if (sPath != null && sPath != undefined)
+                        HighlightAsmcomponent(sPath, application_id); 
+                }
+            },
+            onUncheckAll:function(rows) {
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id;
+
+                UnhighlightAllAsmcomponent(application_id);
+                
+//                for (var i=0; i<rows.length; ++i) {
+//                    var sPath = rows[i].path;
+//                    
+//                    if (sPath != null && sPath != undefined)
+//                        UnhighlightAsmcomponent(sPath, application_id); 
+//                }                
+            }
+        });
+
+        //点击结束工装下拉的编辑状态
+       // $(window).click(function(){
+          //  if (endEditing()){
+		//	alert("dd");
+			//	$('#fixer_list').datagrid('acceptChanges');
+			//}
+       // })
+
+        $('#fixer_list').datagrid({
+            collapsible:true,//定义面板是否可以折叠
+            columns: [[
+                {field:'fixchk', checkbox:true},
+                {field:'fixname', resizable:true, title:'工装编码', width:150, sortable:true, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}}, 
+                {field:'fixpath', resizable:true, hidden:true, title:'path', width:100, align:'center', editor: {type:'text'}}, //, options: { required: true } 
+                {field:'fixbtside', resizable:true, title:'BT面', width: 120, formatter:unitformatter, align:'left', sortable:true, sorter:function(a,b){return (a>b?1:-1);},
+                 editor: {type: 'combobox', options: {panelHeight:'auto', panelMaxHeight:170, data: BTData, valueField:"btsID", textField:"btsText"}}},
+                {field:'fixupdown', resizable:true, title:'上下模', width: 120, formatter:unitupformatter, align:'left', sortable:true, sorter:function(a,b){return (a>b?1:-1);},
+                 editor: {type: 'combobox', options: {panelHeight:'auto', panelMaxHeight:170, data: upData, valueField:"upID", textField:"upText"}}}
+            ]],
+            sortName: "fixname",
+            sortOrder:"asc",
+            onLoadSuccess: function (data){//Fixers selects all
+                if (data == null || data == undefined) return;
+//                if (data.total > 0){
+//                    for (var i=0; i<data.total; ++i){
+//                        var rowIndex = $('#fixer_list').datagrid('getRowIndex', data.rows[i]);
+//                        $('#fixer_list').datagrid('checkRow', rowIndex); 
+//                    }
+//                }
+                if (data.total > 0)
+                    $('#fixer_list').datagrid('checkAll');
+            },
+            onClickCell:function(rowIndex, pckField, value) {
+                event.stopPropagation();
+                pgrid = $(this);
+                editField = pckField;
+                //alert("field_name: " + pckField.toString());
+                if (endEditing()) {
+                    if (pckField.toString() != "fixbtside" && pckField.toString() != "fixupdown")
+                        return;
+                    $(this).datagrid('editCell', {index : rowIndex, field : pckField}); //.datagrid('selectRow', rowIndex)
+                    editIndex = rowIndex;
+                } else {
+                    $(this).datagrid('selectRow', editIndex);
+                }
+            },
+            onDblClickRow:function (rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.fixpath;
+                //alert(sPath); 
+                                  
+                if (sPath != null && sPath != undefined){
+                    ZoomWindowByAsmcomponent(sPath, application_id);
+                    $(this).datagrid('selectRow', rowIndex);
+                    
+                    var selrows =  $(this).datagrid('getSelections');
+                    //alert(selrows.length);
+                    
+                    if (selrows != null && selrows.length > 1){
+                        for (var i=0; i<selrows.length; ++i) {
+                            var sPath = selrows[i].fixpath;
+
+                            if (sPath != null && sPath != undefined)
+                                HighlightAsmcomponent(sPath, application_id); 
+                        } 
+                    }
+                }
+            },            
+            onSelect:function(rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.fixpath;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    HighlightAsmcomponent(sPath, application_id);     
+            },
+            onUnselect:function(rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.fixpath;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    UnhighlightAsmcomponent(sPath, application_id);     
+            },
+            onCheckAll:function(rows) {
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sel_node = $('#procplan-tree').tree('getSelected');
+                
+                if (sel_node != null){
+                    var layer_name = sel_node.id.toString();
+                    layer_name += "_GZC";
+                    DisplayFixers(layer_name, true, application_id);
+                }
+            },
+            onUncheckAll:function(rows) {
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sel_node = $('#procplan-tree').tree('getSelected');
+                
+                if (sel_node != null){
+                    var layer_name = sel_node.id.toString();
+                    layer_name += "_GZC";
+                    DisplayFixers(layer_name, false, application_id);
+                }
+            },
+            onAfterEdit:function(rowIndex, rowData, changes) {
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                var sBtSide = rowData.fixbtside;
+                var sUpSide = rowData.fixupdown;
+                
+                if(changes.fixbtside != "" && changes.fixbtside != undefined){
+                    AddAsmcompParameter("BTSIDE", sBtSide, rowData.fixpath, application_id);
+                }
+                else if(changes.fixupdown != "" && changes.fixupdown != undefined){
+                    AddAsmcompParameter("UPSIDE", sUpSide, rowData.fixpath, application_id);
+                }
+                
+//                for (var i = 0; i < BTData.length; i++) {
+//                    if (BTData[i].btsID == rowData.fixbtside) {
+//                        sBtSide = BTData[i].btsText;
+//                        break;
+//                    }
+//                }
+                //$(this).datagrid('selectRow', editIndex);
+                //alert("BTSide: " + sBtSide +  " Comppath: " + rowData.fixpath)
+                
+            },
+            onCheck: function (rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.fixpath;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    DisplayOneFixer(sPath, true, application_id);                 
+            },
+            onUncheck: function (rowIndex, rowData){
+                var root_node = $('#procplan-tree').tree('getRoot');
+                var application_id = root_node.id; 
+                
+                var sPath;
+                if (rowData != null && rowData != undefined)
+                    sPath = rowData.fixpath;
+                
+                //alert(sPath);
+                
+                if (sPath != null && sPath != undefined)
+                    DisplayOneFixer(sPath, false, application_id);                 
+            }
+        });
+        //comment_list save注释表保存数据
+		function comment_list_save(){
+			var tData = pgrid.datagrid('getData');
+			if (typeof tData.rows.length == 'number' && typeof tData.rows.splice == 'function'){// 判断数据是否是数组
+				var jsonobj = ""; //JSON.stringify(tData.rows);
+				$.each(tData.rows, function(n){
+					jsonobj += '<' + tData.rows[n]["comment"] + '>';
+					if (n < tData.total-1)
+						jsonobj += ',';   
+				});
+				
+				var node = $('#procplan-tree').tree('getSelected');
+				var sBTside = "";
+				var sStepRule = "";
+				var sLayerID = "";
+				var sFixtureID = "";
+				var sRiskTxt = "";
+				if (node.attributes){
+					sBTside = node.attributes.BTside;
+					sStepRule = node.attributes.stepRule;
+					sLayerID = node.attributes.layerID;
+					sFixtureID = node.attributes.fixtureID;
+					
+					if (node.attributes.riskContent)
+						sRiskTxt = node.attributes.riskContent;
+				}
+				
+				$('#procplan-tree').tree('update', {target:node.target,
+									attributes:{"noteContent":jsonobj.toString(), 
+												"BTside":sBTside.toString(),
+												"stepRule":sStepRule.toString(),
+												"layerID":sLayerID.toString(),
+												"fixtureID":sFixtureID.toString(),
+												"riskContent":sRiskTxt.toString()}});
+			}
+		}
+		//risks_list save风险表保存数据
+		function risks_list_save(){
+			var tData = pgrid.datagrid('getData');
+			if (typeof tData.rows.length == 'number' && typeof tData.rows.splice == 'function'){// 判断数据是否是数组
+				var jsonobj = ""; //JSON.stringify(tData.rows);
+				$.each(tData.rows, function(n){
+					jsonobj += '@' + tData.rows[n]["name"] + '~';
+					jsonobj += '$' + tData.rows[n]["bomcode"] + '~';
+					jsonobj += '<' + tData.rows[n]["content"] + '>';
+					if (n < tData.total-1)
+						jsonobj += ',';   
+				});
+				
+				var node = $('#procplan-tree').tree('getSelected');
+				
+				var sBTside = "";
+				var sStepRule = "";
+				var sLayerID = "";
+				var sFixtureID = "";
+				var sNoteTxt = "";
+				if (node.attributes){
+					sBTside = node.attributes.BTside;
+					sStepRule = node.attributes.stepRule;
+					sLayerID = node.attributes.layerID;
+					sFixtureID = node.attributes.fixtureID;
+					
+					if (node.attributes.noteContent)
+						sNoteTxt = node.attributes.noteContent;
+				}
+				
+				$('#procplan-tree').tree('update', {target:node.target,
+									attributes:{"noteContent":sNoteTxt.toString(), 
+												"BTside":sBTside.toString(),
+												"stepRule":sStepRule.toString(),
+												"layerID":sLayerID.toString(),
+												"fixtureID":sFixtureID.toString(),
+												"riskContent":jsonobj.toString()}});
+			}
+		}
+        $('#comment_list').datagrid({
+            onClickCell:function(rowIndex, pckField, value) {
+                pgrid = $(this);
+                editField = pckField;
+                editComment = true;
+                
+                //if (editIndex != rowIndex) {
+                    if (endEditing()) {
+                        $(this).datagrid('selectRow', rowIndex).datagrid('beginEdit', rowIndex);
+                        editIndex = rowIndex;
+						comment_list_save();
+                    } else {
+                        $(this).datagrid('selectRow', editIndex);
+                    }
+                //}
+            }
+        });      
+        
+        $('#risks_list').datagrid({
+            onClickCell:function(rowIndex, pckField, value) {
+                pgrid = $(this);
+                editField = pckField;
+                editRisks = true;
+                
+                //if (editIndex != rowIndex) {
+                    if (endEditing()) {
+                        $(this).datagrid('selectRow', rowIndex).datagrid('beginEdit', rowIndex);
+                        editIndex = rowIndex;
+						risks_list_save();
+                    } else {
+                        $(this).datagrid('selectRow', editIndex);
+                    }
+                //}
+            }
+        });
+        
+        //load success
+		function onLoadSuccess(data){			
+		}
+        //Output tree datas
+        function fnTreeData2Json(tData){
+            var sText = "";
+            if (typeof tData.length == 'number' && typeof tData.splice == 'function'){ //判断是否是数组
+                $.each(tData,function(i){
+                    sText += '{"id":"' +  tData[i].id.toString() + '","text":"' +  tData[i].text.toString() + '","state":"' +  tData[i].state.toString() + '","checked":false';
+                    if (tData[i].attributes){
+                       sText += ',"attributes":{"assemblyName":"' + tData[i].attributes.assemblyName + '","layerName":"' + tData[i].attributes.layerName + '"}';
+                    }
+                    if (tData[i].children){ //the 1st sub node
+                        var subNodes = tData[i].children;
+                        if (typeof subNodes.length == 'number' && typeof subNodes.splice == 'function'){ //判断是否是数组
+                            sText += ',"children":[';
+
+                            $.each(subNodes,function(n){
+                                sText += '{"id":"' +  subNodes[n].id.toString() + '","text":"' +  subNodes[n].text.toString() + '","state":"' +  subNodes[n].state.toString() + '","checked":false';
+                                if (subNodes[n].children){ //the 2nd sub node
+                                    var sub2ndNodes = subNodes[n].children;
+                                    if (typeof sub2ndNodes.length == 'number' && typeof sub2ndNodes.splice == 'function'){ //判断是否是数组
+                                        sText += ',"children":[';
+                                        $.each(sub2ndNodes,function(m){
+                                            sText += '{"id":"' +  sub2ndNodes[m].id.toString() + '","text":"' +  sub2ndNodes[m].text.toString() + '","state":"' +  sub2ndNodes[m].state.toString() + '"';
+                                            if (sub2ndNodes[m].attributes){
+                                                sText += ',"attributes":{"BTside":"' + sub2ndNodes[m].attributes.BTside + '"'; 
+                                                sText += ',"stepRule":"' + sub2ndNodes[m].attributes.stepRule + '"';
+                                                sText += ',"layerID":"' + sub2ndNodes[m].attributes.layerID + '"';
+                                                sText += ',"fixtureID":"' + sub2ndNodes[m].attributes.fixtureID + '"';
+                                                if (sub2ndNodes[m].attributes.noteContent){
+                                                    sText += ',"noteContent":"' + sub2ndNodes[m].attributes.noteContent + '"';
+                                                }
+                                                if (sub2ndNodes[m].attributes.riskContent){
+                                                    sText += ',"riskContent":"' + sub2ndNodes[m].attributes.riskContent + '"';
+                                                }                                                
+                                                sText += '}';
+                                            }                                            
+                                            if (sub2ndNodes[m].children){
+                                                //next level node        
+                                            }
+                                            sText += ',"checked":' + sub2ndNodes[m].checked + '}';
+
+                                            if (m != sub2ndNodes.length-1)
+                                               sText += ','; 
+                                        });
+                                        sText += ']';
+                                    }
+                                }
+                                sText += '}'; 
+                                if (n != subNodes.length-1)
+                                   sText += ','; 
+                            });
+                            sText += ']';
+                        }
+                    } //sub nodes                    
+                    sText += '}';
+                    if (i != tData.length-1)
+                        sText += ','; 
+                });
+            }
+            else{
+                sText += '{"id":"' +  tData.id.toString() + '","text":"' +  tData.text.toString() + '","state":"' +  tData.state.toString() + '","checked":false';
+                if (tData.attributes){
+                   sText += ',"attributes":{"assemblyName":"' + tData.attributes.assemblyName + '","layerName":"' + tData.attributes.layerName + '"}';
+                }
+                if (tData.children){ //the 1st sub node
+                    var subNodes = tData.children;
+                    if (typeof subNodes.length == 'number' && typeof subNodes.splice == 'function'){ //判断是否是数组
+                        sText += ',"children":[';
+                         
+                        $.each(subNodes,function(n){
+                            sText += '{"id":"' +  subNodes[n].id.toString() + '","text":"' +  subNodes[n].text.toString() + '","state":"' +  subNodes[n].state.toString() + '","checked":false';
+                            if (subNodes[n].children){ //the 2nd sub node
+                                var sub2ndNodes = subNodes[n].children;
+                                if (typeof sub2ndNodes.length == 'number' && typeof sub2ndNodes.splice == 'function'){ //判断是否是数组
+                                    sText += ',"children":[';
+                                    $.each(sub2ndNodes,function(m){
+                                        sText += '{"id":"' +  sub2ndNodes[m].id.toString() + '","text":"' +  sub2ndNodes[m].text.toString() + '","state":"' + sub2ndNodes[m].state.toString() + '"';
+                                        if (sub2ndNodes[m].attributes){
+                                            sText += ',"attributes":{"BTside":"' + sub2ndNodes[m].attributes.BTside + '"';
+                                            sText += ',"stepRule":"' + sub2ndNodes[m].attributes.stepRule + '"';
+                                            sText += ',"layerID":"' + sub2ndNodes[m].attributes.layerID + '"';
+                                            sText += ',"fixtureID":"' + sub2ndNodes[m].attributes.fixtureID + '"';                                            
+                                            if (sub2ndNodes[m].attributes.noteContent){
+                                                sText += ',"noteContent":"' + sub2ndNodes[m].attributes.noteContent + '"';
+                                            }
+                                            if (sub2ndNodes[m].attributes.riskContent){
+                                                sText += ',"riskContent":"' + sub2ndNodes[m].attributes.riskContent + '"';
+                                            }                                                
+                                            sText += '}';
+                                        }
+                                        if (sub2ndNodes[m].children){
+                                            //next level node        
+                                        }
+                                        sText += ',"checked":' + sub2ndNodes[m].checked + '}';
+                                        
+                                        if (m != sub2ndNodes.length-1)
+                                           sText += ','; 
+                                    });
+                                    sText += ']';
+                                }
+                            }
+                            sText += '}';
+                            
+                            if (n != subNodes.length-1)
+                               sText += ','; 
+                        });
+                        sText += ']';
+                    }
+                } //sub nodes
+               sText += '}'; 
+            }
+            return ("[" + sText + "]");
+        }
