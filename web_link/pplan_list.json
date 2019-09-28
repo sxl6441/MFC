@@ -1,0 +1,22 @@
+[
+   {
+      "ppid" : 0,
+      "pptext" : "全集工序模板",
+      "selected" : true
+   },
+   {
+      "ppid" : 1,
+      "pptext" : "工艺路线示例1",
+      "selected" : false
+   },
+   {
+      "ppid" : 2,
+      "pptext" : "工艺路线示例2",
+      "selected" : false
+   },
+   {
+      "ppid" : 3,
+      "pptext" : "2018B工艺路线",
+      "selected" : false
+   }
+]
