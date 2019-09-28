@@ -1,0 +1,22 @@
+[
+   {
+      "ppid" : 1,
+      "pptext" : "工艺路线示例1",
+      "selected" : true
+   },
+   {
+      "ppid" : 2,
+      "pptext" : "工艺路线示例2",
+      "selected" : false
+   },
+   {
+      "ppid" : 3,
+      "pptext" : "2018B工艺路线",
+      "selected" : false
+   },
+   {
+      "ppid" : 4,
+      "pptext" : "SIP工艺路线",
+      "selected" : false
+   }
+]
