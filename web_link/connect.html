@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>Connect Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 1 jQuery的js包 -->
+    <script type="text/javascript" src="D:\protoolkit\WitDev\bin\web_link\jquery_easyui\test_html\jquery.min.js"></script>
+  
+    <!-- PTC weblink -->
+    <script type="text/javascript" src="jscript/pfcUtils.js"></script>
+    
+</head>
+
+<body>
+    <center style=''>
+        <!-- <input id="save-btn"  type="button" value="保存"> --> 
+        <input id="load-btn"  type="button" value="Load dll"> 
+        <input id="unload-btn"  type="button" value="Unload dll"> 
+    </center>
+    <script type="text/javascript">
+		$('#save-btn').bind('click',function(){            
+            $.ajax({
+                dataType:'json',
+                type:'post',
+                url:'http://dgweb-uata.huawei.com/eToolsCloud/ADPNotes/rest/ws/p/QJGCYLQDK/getData/created',
+                async:false,
+                //contentType: "application/json;utf-8",
+                data:{QJBM:391104},
+                //beforeSend: function(xhr){xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');},
+                success:function(data)
+                {
+                    alert(data[0].NLZX);
+                    $.each(data,function(index,item){
+                        alert(item.QJBM)
+                    });
+                },
+                error:function(data)
+                {
+                    alert('Error:'+JSON.stringify(data));
+                }
+            });
+        });
+        
+        var dll = null;
+        
+        $('#load-btn').bind('click',function(){ 
+            var global = pfcCreate ("MpfcCOMGlobal");
+            alert(global.GetProEVersion());
+            var session = global.GetProESession();
+            dll = session.LoadProToolkitDll("weblink2toolkit", "D:/protoolkit/WitDev/bin/Web2Toolkit.dll", "D:/protoolkit/WitDev/text/chinese_cn/", true);
+            if (dll != null){
+                alert('App ID: ' +dll.id);
+            }
+                
+        });
+        
+        $('#unload-btn').bind('click',function(){ 
+            if (dll != null){
+                dll.Unload();
+            }
+        });
+    </script>    
+    
+</body>
+</html>
