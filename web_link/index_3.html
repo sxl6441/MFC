@@ -1,0 +1,728 @@
+       
+        function insertTreegridNode(item)
+        {
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var node = $('#templates_list').treegrid('find', item.id);
+            if (node != null){
+                $.messager.alert("警告","工艺节点已经存在，不能重复", "error");
+                return;
+            }
+            var sel_node = $('#templates_list').treegrid('getSelected');
+            if (sel_node){
+                $('#templates_list').treegrid('insert', {
+                    //before: node.target,
+                    after: sel_node.id,
+                    data: {
+                        id: item.id,
+                        plannode: item.text,
+                        planbtside:"",
+                        planrule:"",
+                        state:"open"
+                    }
+                });
+                node = $('#templates_list').treegrid('find', item.id);
+                if (node != null){
+                    var sData = RetrieveProcplanTGridNodeChildren(node.id, root_node.id);
+                    //alert(sData);
+                    if (sData == null) return;
+                    $('#templates_list').treegrid('append', {
+                        parent: node.id, 
+                        data: $.parseJSON(sData)
+                    });
+                }
+            }            
+        }
+        
+        //点击右键-工艺树Tree
+        function activeMenu(){
+            //alert("picked menu: Active btn");
+            var node = $('#procplan-tree').tree('getSelected');
+            if (node != null && node != undefined) {
+               $('#procplan-tree').tree('check', node.target);     
+            }
+        }
+        
+        
+        function displayMenu(){
+            //alert("picked menu: Display btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            var node = $('#procplan-tree').tree('getSelected');
+            var children = $('#procplan-tree').tree('getChildren', root_node.target);
+            
+            var checkedID = "";
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){
+                    //$('#procplan-tree').tree('check', children[i].target);
+                    $('#procplan-tree').tree('update', {target:children[i].target, checked:true});  
+                    checkedID += children[i].id.toString() + ',';                    
+                    if (children[i].id.toString() == node.id.toString())
+                        break;
+                }
+            }
+            
+            DisplayAsmcomponents(checkedID, true, application_id);
+            
+//            if (node != null && node != undefined) {
+//               $('#procplan-tree').tree('check', node.target);     
+//            }
+        }
+
+        //选择前面的工序
+        function selectFront(select_type){
+            //alert("picked menu: Display btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            var node = $('#procplan-tree').tree('getSelected');
+            var children = $('#procplan-tree').tree('getChildren', root_node.target);
+            
+            var checkedID = "";
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){
+					$('#procplan-tree').tree('update', {target:children[i].target, checked:true});  
+                    checkedID += children[i].id.toString() + ',';                    
+                    if (children[i].id.toString() == node.id.toString())
+                        break;
+                }
+            }
+            
+            FrontAsmcomponents(checkedID, select_type, application_id);
+        }
+
+        function blankMenu(){
+            //alert("picked menu: Blank btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            var node = $('#procplan-tree').tree('getSelected');
+            var children = $('#procplan-tree').tree('getChildren', root_node.target);
+            
+            var checkedID = "";
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){
+                    if (children[i].id.toString() == node.id.toString())
+                        break;                    
+                    //$('#procplan-tree').tree('uncheck', children[i].target);
+                    $('#procplan-tree').tree('update', {target:children[i].target, checked:false});  
+                    checkedID += children[i].id.toString() + ',';
+                    checkedID += children[i].id.toString() + '_GZC,';                    
+                }
+            }
+            
+            DisplayAsmcomponents(checkedID, false, application_id);
+        }
+        
+        function blankAllMenu(){
+            //alert("picked menu: Blank All btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            //var node = $('#procplan-tree').tree('getSelected');
+            
+            var children = $('#procplan-tree').tree('getChildren', root_node.target);
+            
+            var checkedID = "";
+            
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){
+//                    //if (children[i].id.toString() == node.id.toString()) break; 
+//                    $('#procplan-tree').tree('uncheck', children[i].target);
+                    $('#procplan-tree').tree('update', {target:children[i].target, checked:false});  
+                    checkedID += children[i].id.toString() + ',';
+                    checkedID += children[i].id.toString() + '_GZC,';
+                }
+            }
+            
+            DisplayAsmcomponents(checkedID, false, application_id);
+            
+            $('#component_list').datagrid('loadData', {total:0, rows:[]}); 
+            $('#fixer_list').datagrid('loadData', {total:0, rows:[]}); 
+            $('#comment_list').datagrid('loadData', {total:0, rows:[]}); 
+            $('#risks_list').datagrid('loadData', {total:0, rows:[]});               
+        }
+        
+        
+        function collisionMenu_1(){
+            //alert("picked menu: Collision btn1");
+            var node = $('#procplan-tree').tree('getSelected');
+            if (node == null || node == undefined)
+                return;
+            
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            
+            var gzc_layer = node.id.toString() + "_GZC";
+            var cmp_layer = "";
+            
+            var children = $('#procplan-tree').tree('getChildren', root_node.target);
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){
+                    if (children[i].checked && children[i].text != "PCB")
+                        cmp_layer += children[i].id.toString() + ";";
+                    if (children[i].id.toString() == node.id.toString())
+                        break;
+                }
+            }
+            
+            //Show progress bar.
+            //showProgress(true, '温馨提示', '正在计算干涉...');
+            
+            var rst_return = CalcDistByFixersAndComponents(gzc_layer, cmp_layer, application_id);
+            //alert(rst_return.FunctionReturn);
+            if (rst_return == null) return;
+            
+            if (rst_return.FunctionReturn == 0)
+            {
+                //showProgress(false);
+                openDialog();
+            }
+        }
+        
+        function collisionMenu_2(){
+            alert("picked menu: Collision btn2");
+        }
+
+      //选波焊接T/B
+        function simulationMenu_1_1(){
+            var node = $('#procplan-tree').tree('getSelected');
+            //alert("picked menu: Simulation_1 btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+
+            var app_id = RetrieveSpecifiedAppID(application_id, "SelectiveWaveSoldering");
+            //alert(app_id);
+            var label = RetrieveAsmcomponents(node.id, application_id);
+            var asm = RetrieveFixercomponents(node.id, application_id);
+
+            if(!!asm){
+                var asmjson = JSON.parse(asm);
+                for(var i = 0;i < asmjson.length; i++){
+                    if(!asmjson[i].fixbtside){
+                        $.messager.alert("提示", "请填写工装清单中的BT面", "error");
+                        return;
+                    }
+                }
+            }
+            selectFront(1);
+            SelectiveWaveSoldering_T(label, asm, app_id);
+
+            //RetrieveAsmfileAutomatic("D:\\protoolkit\\2018\\model\\03021UUG\\03021uug_xb0b.asm", app_id)
+        }
+        function simulationMenu_1_2() {
+            var node = $('#procplan-tree').tree('getSelected');
+            //alert("picked menu: Simulation_1 btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+
+            var app_id = RetrieveSpecifiedAppID(application_id, "SelectiveWaveSoldering");
+            //alert(app_id);
+            
+            var label = RetrieveAsmcomponents(node.id, application_id);
+            var asm = RetrieveFixercomponents(node.id, application_id);
+
+            if(!!asm){
+                var asmjson = JSON.parse(asm);
+                for(var i = 0;i < asmjson.length; i++){
+                    if(!asmjson[i].fixbtside){
+                        $.messager.alert("提示", "请填写工装清单中的BT面", "error");
+                        return;
+                    }
+                }
+            }
+            selectFront(2);
+            SelectiveWaveSoldering_B(label, asm, app_id);
+
+            //RetrieveAsmfileAutomatic("D:\\protoolkit\\2018\\model\\03021UUG\\03021uug_xb0b.asm", app_id)
+        }
+        //压接焊接T/B
+        function simulationMenu_2_1() {
+            var node = $('#procplan-tree').tree('getSelected');
+            //alert("picked menu: Simulation_1 btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            var app_id = RetrieveSpecifiedAppID(application_id, "PressureWeldingSoldering");
+            //alert(app_id);
+            var label = RetrieveAsmcomponents(node.id, application_id);
+            var asm = RetrieveFixercomponents(node.id, application_id);
+            //alert(label);
+			//alert(asm);
+            if(!!asm){
+                var asmjson = JSON.parse(asm);
+                for(var i = 0;i < asmjson.length; i++){
+                    if(!asmjson[i].fixbtside || !asmjson[i].fixupdown){
+                        $.messager.alert("提示", "请填写工装清单中的BT面和上下模", "error");
+                        return;
+                    }
+                }
+            }
+            selectFront(3);
+            PressureWeldingSoldering_T(label, asm, app_id);
+            //RetrieveAsmfileAutomatic("D:\\protoolkit\\2018\\model\\03021UUG\\03021uug_xb0b.asm", app_id)
+        }
+        function simulationMenu_2_2() {
+            var node = $('#procplan-tree').tree('getSelected');
+            //alert("picked menu: Simulation_1 btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+
+            var app_id = RetrieveSpecifiedAppID(application_id, "PressureWeldingSoldering");
+            //alert(app_id);
+
+            var label = RetrieveAsmcomponents(node.id, application_id);
+            var asm = RetrieveFixercomponents(node.id, application_id);
+
+            if(!!asm){
+                var asmjson = JSON.parse(asm);
+                for(var i = 0;i < asmjson.length; i++){
+                    if(!asmjson[i].fixbtside || !asmjson[i].fixupdown){
+                        $.messager.alert("提示", "请填写工装清单中的BT面和上下模", "error");
+                        return;
+                    }
+                }
+            }
+            selectFront(4);
+            PressureWeldingSoldering_B(label, asm, app_id);
+
+            //RetrieveAsmfileAutomatic("D:\\protoolkit\\2018\\model\\03021UUG\\03021uug_xb0b.asm", app_id)
+        }
+        //分板焊接
+        function simulationMenu_3() {
+            var node = $('#procplan-tree').tree('getSelected');
+            //alert("picked menu: Simulation_1 btn");
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+
+            var app_id = RetrieveSpecifiedAppID(application_id, "SeparateBoardSoldering");
+            //alert(app_id);
+
+            var label = RetrieveAsmcomponents(node.id, application_id);
+            var asm = RetrieveFixercomponents(node.id, application_id);
+
+            if(!!asm){
+                var asmjson = JSON.parse(asm);
+                for(var i = 0;i < asmjson.length; i++){
+                    if(!asmjson[i].fixbtside){
+                        $.messager.alert("提示", "请填写工装清单中的BT面", "error");
+                        return;
+                    }
+                }
+            }
+            selectFront(5);
+            SeparateBoardSoldering(label, asm, app_id);
+
+            //RetrieveAsmfileAutomatic("D:\\protoolkit\\2018\\model\\03021UUG\\03021uug_xb0b.asm", app_id)
+        }
+        
+        function queryMenu(){
+            //alert("picked menu: Query btn");
+            openDialog();
+        }        
+        
+        function removeMenu(){
+            //alert("picked menu: Remove btn");
+            var node = $('#procplan-tree').tree('getSelected');
+            if (node == null || node == undefined)
+                return;
+            $.messager.confirm("提示", "确定要删除选取的工序吗?", function(r) {
+                if (r) {
+                    var root_node = $('#procplan-tree').tree('getRoot');
+                    var application_id = root_node.id;
+                    
+                    DisplayAsmcomponents(node.id, false, application_id);
+                    
+                    var selRows = $("#component_list").datagrid('getRows');
+                    for (var i = 0; i < selRows.length; i++) {
+                        var spath = selRows[i].path;
+                        var resval = RemoveAsmcomponent(spath, true, node.id, application_id);
+                    }
+                    
+                    var selFixRows = $("#fixer_list").datagrid('getRows');
+                    for (var i = 0; i < selFixRows.length; i++) {
+                        var spath = selFixRows[i].fixpath;
+                        var resval = RemoveAsmcomponent(spath, false, node.id, application_id);
+                    } 
+                    //removes selected node
+                    var parent_node = $('#procplan-tree').tree('getParent', node.target); 
+                    var childs = $('#procplan-tree').tree('getChildren', parent_node.target);
+                    
+                    $('#procplan-tree').tree('remove', node.target);
+                    
+                    if (childs != null && childs.length == 1)
+                        $('#procplan-tree').tree('remove', parent_node.target);
+                    
+                    $('#component_list').datagrid('loadData', {total:0, rows:[]}); 
+                    $('#fixer_list').datagrid('loadData', {total:0, rows:[]}); 
+                    $('#comment_list').datagrid('loadData', {total:0, rows:[]}); 
+                    $('#risks_list').datagrid('loadData', {total:0, rows:[]});                    
+                }
+            });
+        }
+        
+        //Export step format file
+        function exportMenu() {
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id;
+            var node = $('#procplan-tree').tree('getSelected');
+            var children = $('#procplan-tree').tree('getChecked');
+            
+            var checkedID = "";
+            for (var i = 0; i < children.length; i++) {
+                if ($('#procplan-tree').tree('isLeaf', children[i].target)){ 
+                    checkedID += children[i].id.toString() + ',';                    
+                    if (children[i].id.toString() == node.id.toString())
+                        break;
+                }
+            } 
+            
+            var retRes = ExportComps2StepFile(checkedID, application_id);
+            if (retRes != null) {
+                if (retRes == 0)
+                    $.messager.alert("提示", "输出Step文件完成！", "info");
+                else
+                    $.messager.alert("提示", "输出Step文件失败！", "error"); 
+            }
+            else
+                $.messager.alert("提示", "输出Step文件失败！", "error");
+        }
+        
+        // 显示检查结果窗口
+        function openDialog() {
+            //$('#openReceiveFeedBack')[0].src = data;
+            //alert('calculated completed!')
+            //$('#ReceiveFeedBackDialog').hide();
+            
+            $('#ReceiveFeedBackDialog').dialog({
+                onLoad:function() {
+                    $.getJSON("calc_result.json", function(data){         
+                        $('#result_list').datagrid({loadFilter:pagerFilter}).datagrid('loadData', data);
+                    });
+                },
+                onClose: function () {
+                    //$("#ReceiveFeedBackDialog").dialog('destroy');
+                    var root_node = $('#procplan-tree').tree('getRoot');
+                    var application_id = root_node.id;
+                    
+                    UnhighlightAllAsmcomponent(application_id);
+                    
+                }            
+            });
+              
+            $('#result_list').datagrid({
+                url:'calc_result.json', 
+                remoteSort:false,
+                rownumbers:true,
+                singleSelect:false,
+                method:'get',
+                padding:0.0,
+                nowrap:false,
+                pagination:true,
+                pageSize:50,
+                pageList:[50,100,200,500],
+                columns: [[
+                    {field:'fname', resizable:true, title:'编码_A', width:150, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}},
+                    {field:'fcode', resizable:true, title:'位置号_A', width:100, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}},
+                    {field:'fpath', resizable:true, hidden:true, title:'path', width:100, align:'center', editor: {type:'text'}}, 
+                    {field:'cname', resizable:true, title:'编码_B', width:150, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}},
+                    {field:'ccode', resizable:true, title:'位置号_B', width:100, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'}},
+                    {field:'cpath', resizable:true, hidden:true, title:'path', width:100, align:'center', editor: {type:'text'}}
+                ]],             
+                onSelect:function(rowIndex, rowData){
+                    var root_node = $('#procplan-tree').tree('getRoot');
+                    var application_id = root_node.id; 
+
+                    var sPath_a, sPath_b;
+                    if (rowData != null && rowData != undefined){
+                        sPath_a = rowData.cpath;
+                        sPath_b = rowData.fpath;
+                    }
+
+                    //alert(sPath);
+
+                    if (sPath_a != null && sPath_a != undefined && sPath_b != null && sPath_b != undefined)
+                        HighlightAsmcomponentPair(sPath_a, sPath_b, application_id);     
+                },
+                onUnselect:function(rowIndex, rowData){
+                    var root_node = $('#procplan-tree').tree('getRoot');
+                    var application_id = root_node.id; 
+
+                    var sPath_a, sPath_b;
+                    if (rowData != null && rowData != undefined){
+                        sPath_a = rowData.cpath;
+                        sPath_b = rowData.fpath;
+                    }
+
+                    //alert(sPath);
+
+                    if (sPath_a != null && sPath_a != undefined && sPath_b != null && sPath_b != undefined){
+                        UnhighlightAsmcomponent(sPath_a, application_id); 
+                        UnhighlightAsmcomponent(sPath_b, application_id); 
+                    }
+                }            
+            });
+            
+            $('#ReceiveFeedBackDialog').dialog('open');
+            $('#ReceiveFeedBackDialog').window('center');//使Dialog居中显示
+        } 
+        
+        function closeDialog() {
+            $('#ReceiveFeedBackDialog').dialog('close');
+        } 
+                 
+        function refreshData() {
+            //var data = [{fname:'A', fcode:'A01', fpath:'1',cname:'B', ccode:'B01', cpath:'10'},
+            //            {fname:'AA', fcode:'AA01', fpath:'2',cname:'BB', ccode:'BB01', cpath:'20'}];             
+            $.getJSON("calc_result.json", function(data){           
+                $('#result_list').datagrid({loadFilter:pagerFilter}).datagrid('loadData', data);
+            });
+//            $.ajax({
+//                dataType:'json',
+//                type:'post',
+//                url:'test.json',
+//                async:false,
+//                contentType: "application/json;utf-8", 
+//                //beforeSend: function(xhr){xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');},
+//                success:function(data)
+//                {
+//                    alert(data[0].fname);
+//                    $.each(data,function(index,item){
+//                        alert(item.fname)
+//                    });
+//                },
+//                error:function(data)
+//                {
+//                    alert('Error:'+JSON.stringify(data));
+//                }
+//            });            
+        }
+        
+        //Progress box displays
+        function showProgress(isShow, title, msg) {
+            if (!isShow) {
+                $.messager.progress('close');
+                return;
+            }
+            var win = $.messager.progress({
+                title: title,
+                msg: msg,
+                interval:'1000'
+            });
+        }
+        
+        
+        //Combobox formatter in datagrid
+        var BTEditData = [{"btsID":0, "btsText":"Any"}, {"btsID":1, "btsText":"T"}, {"btsID":2, "btsText":"B"}];
+        
+        function BTEditFormatter(value, row) {
+            if (value == "") return;
+            
+            for (var i = 0; i < BTEditData.length; i++) {
+                if (BTEditData[i].btsID == value) {
+                    return BTEditData[i].btsText;
+                }
+            }
+        }
+        
+        //Template options
+        function optionsMenu(){
+            var preClickRow = -1;
+            var root_node = $('#procplan-tree').tree('getRoot');
+            var application_id = root_node.id; 
+            
+            RetrieveProcplanList(true, application_id);
+            
+            $('#pplantmp-cmb').combobox('clear');
+            $('#pplantmp-cmb').combobox('reload');
+            //$('#pplantmp-cmb').combobox('setValue', 0);
+            
+            var retVal = GetProcplanOriginalData(application_id);
+            
+            //Comment For Test
+            //if (retVal == null) return;
+            
+            $('#SetsTemplateDialog').hide();
+            
+            $('#SetsTemplateDialog').dialog({
+                onLoad:function() {
+                    $.getJSON("pplan_template.json", function(data){         
+                        //$('#templates_list').treegrid({loadFilter:pagerFilter}).treegrid('loadData', data);
+                    });
+                },
+                onClose: function () {
+                    //取得文本
+                    var procplan = $('#processplan-cmb').combobox('getText'); 
+                    
+                    RetrieveProcplanList(false, application_id);
+                    
+                    $('#processplan-cmb').combobox('reload');
+                    $('#processplan-cmb').combobox('setText', procplan);
+                }
+            });
+            
+            var elem = $('#dlg-header');
+            elem.title = application_id;
+            //alert(elem.title);
+            
+            $('#templates_list').treegrid({
+                remoteSort: false,
+                nowrap: true,
+                fit: true,
+                border: false,
+                dnd: true,
+                method: 'GET',
+                rownumbers: true,//显示行号
+                collapsible: true,//定义面板是否可以折叠
+                loadMsg: "正在加载信息请稍候...",
+                animate: true,
+                url: 'pplan_template.json', 
+                idField: 'id',                //数据表格要有主键
+                treeField: 'plannode',        //treegrid 树形结构主键 text
+                fitColumns: true,//表格自动适应
+                striped: false,//隔行变色,
+                pagination: false,//底部显示工具栏组件
+                pageSize: 5,
+                pageList: [5,20,50,100,200],//每页显示数
+                //sortName:'size',
+                //sortOrder:'asc',
+                columns:[[
+                    {field:'plannode',title:'工序路线树',width:200, sortable:false, sorter:function(a,b){return (a>b?1:-1);}},
+                    {field:'planbtside',title:'BT面',width:120, formatter:BTEditFormatter, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'combobox', options: {panelHeight:'auto', panelMaxHeight:170, data: BTEditData, valueField:"btsID", textField:"btsText"}}}, 
+                    {field:'planrule',title:'分配规则',width:150, sortable:false, sorter:function(a,b){return (a>b?1:-1);}, editor: {type: 'text'},} // formatter:function(value,row){if(row.leaf){return value;}else{return '';}}
+                ]],
+                onLoadSuccess:function(data){
+                    delete $(this).treegrid('options').queryParams['id']; 
+                    //enableDnd($('#templates_list'));
+                },
+                onContextMenu: function(e,row){
+                    e.preventDefault();                     //屏蔽浏览器的菜单
+                    $(this).treegrid('unselectAll');        //清除所有选中项
+                    $(this).treegrid('select', row.id);     //选中状态 
+                    if (row.id.indexOf("_")<0){
+                        createNodeMenu('#tdaddmm');
+                    }
+                    else{
+                        createRemoveNodeMenu('#tdaddmm');
+                    }
+                    $('#tdaddmm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });                           
+                },
+                onClickCell: function(field, row){
+                    //alert("Column: " + field + ", row ID: " + row.id);
+                    var tRows = $('#templates_list').treegrid('getChildren', row.id);
+                    //alert(tRows.length);
+                    if (field == 'plannode' /*&& tRows.length == 0*/)
+                        $('#templates_list').treegrid('enableDnd');
+                    else
+                        $('#templates_list').treegrid('disableDnd');
+                },
+                onClickRow: function(row){//运用单击事件实现一行的编辑结束，在该事件触发前会先执行onAfterEdit事件
+                    var rowIndex = row.id;
+                    if (preClickRow != rowIndex){
+                        $(this).treegrid('endEdit', preClickRow);
+                        //preClickRow = rowIndex;
+                        preClickRow = -1;
+                    }
+                },
+                onDblClickRow: function(row){//运用双击事件实现对一行启动编辑
+                    var rowIndex = row.id;
+                    if (rowIndex.indexOf('_') < 0) return;
+                    
+                    if (preClickRow != rowIndex){
+                        $(this).treegrid('endEdit', preClickRow);
+                        $(this).treegrid('beginEdit', rowIndex);
+                        preClickRow = rowIndex;
+                    }                    
+                }                
+            });
+
+            //$('#pplantmp-cmb').combobox('setText', '全集工序模板');
+            $('#SetsTemplateDialog').dialog('open');
+            $('#SetsTemplateDialog').window('center');//使Dialog居中显示            
+        }
+        
+        $('#pplantmp-cmb').combobox({
+            url:'pplan_list.json',
+            valueField:'ppid',
+            textField:'pptext'
+        });
+                
+        //查看模板
+		$('#pplantmp-selbtn').bind('click',function(){
+			var root_node = $('#procplan-tree').tree('getRoot');
+			var application_id = root_node.id;
+            //alert(application_id.toString());
+            
+            //取得ID
+            //var procplan = $('#processplan-cmb').combobox('getValue'); 
+            //取得文本
+            var procplan = $('#pplantmp-cmb').combobox('getText'); 
+            //alert(procplan.toString());
+            
+            var return_data = RetrieveProcplanDataFromDB(procplan, application_id);
+            if(return_data != null && return_data.length > 0){        
+                $('#templates_list').treegrid('loadData',JSON.parse(return_data));
+            }
+        });
+        
+        //保存模板
+		$('#pplantmp-savebtn').bind('click',function(){
+			var root_node = $('#procplan-tree').tree('getRoot');
+			var application_id = root_node.id;
+            //alert(application_id.toString());
+            
+            var sDefVal = $('#pplantmp-cmb').combobox('getText');            
+            $.messager.prompt("提示", "请输入模板名称：", function (data){
+                if (data) {
+                    //alert(data);
+                    sDefVal = data;
+                }
+                $.messager.confirm("保存确认", "确定存储模板名称： " + sDefVal, function (r){
+                    if (r) {
+                        var rowDatas = $('#templates_list').treegrid('getData');
+                        var sText = JSON.stringify(rowDatas);
+                        //alert(sText);
+                        var retval = StoreProcplanData2DB(sDefVal, sText, application_id);
+                        if (retval != null){
+                            RetrieveProcplanList(true, application_id);
+                            $('#pplantmp-cmb').combobox("clear");
+                            $('#pplantmp-cmb').combobox("reload");
+                            $.messager.alert("提示", "模板保存完成", "info");
+                        }
+                        $('#pplantmp-cmb').combobox("setText", sDefVal);
+                    }
+                });                
+            }); 
+//            var tmpname = prompt('请输入模板名称', sDefVal).panel();
+//            if(tmpname=="" || tmpname==null){
+//                alert('请输入模板名称');
+//            }else{
+//                alert('输入模板名称：' + tmpname);
+//            }
+        });
+        
+        //移除模板
+		$('#pplantmp_delbtn').bind('click',function(){
+			var root_node = $('#procplan-tree').tree('getRoot');
+			var application_id = root_node.id;
+            //alert(application_id.toString());
+            
+            var sTextVal = $('#pplantmp-cmb').combobox('getText');
+            if (sTextVal.indexOf("全集工序模板")==0){
+                $.messager.alert("错误", "不能删除全集工序模板！", "error");
+                return;
+            }
+            $.messager.confirm("保存确认", "确定删除模板： " + sTextVal, function (r){
+                if (r) {
+                    var retval = DeleteProcplanData2DB(sTextVal, application_id);
+                    if (retval != null){
+                        RetrieveProcplanList(true, application_id);
+                        $('#pplantmp-cmb').combobox("clear");
+                        $('#pplantmp-cmb').combobox("reload"); 
+                        $('#templates_list').treegrid('loadData', {total:0, rows:[]}); 
+                        $.messager.alert("提示", "删除工序模块完成！", "info");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
