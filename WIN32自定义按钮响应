@@ -1,0 +1,2 @@
+	ON_CONTROL_RANGE(BN_CLICKED, CSecHomeDlg::UserCtrlID, CSecHomeDlg::UserCtrlID + 1000, CSecHomeDlg::OnUserBtnClicked)
+	ON_CONTROL_RANGE(LBN_SELCHANGE, /*CSecHomeDlg::UserCtrlID*/0, CSecHomeDlg::UserCtrlID + 1000, CSecHomeDlg::OnUserListBoxSelChange)
