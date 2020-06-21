@@ -1,3 +1,27 @@
+'如下是SFX自解压配置
+;The comment below contains SFX script commands
+
+Path=D:\PTC
+Setup=.\ProcessFixture\start_set.vbs
+Presetup=.\ProcessFixture\start_title.vbs
+SetupCode
+Silent=2
+Overwrite=1
+Delete=.\ProcessFixture\*.*
+
+'如下是start_title.vbs
+on error resume Next
+Dim WshShell,fs,currdir
+Set fs=WScript.CreateObject("Scripting.FileSystemObject")
+Set WshShell = WScript.CreateObject("WScript.Shell")
+currdir=fs.getfolder(".")
+msgbox "接下来，插件将安装在" & currdir & "下，请知悉。"
+'释放
+set fs=nothing
+set WshShell=nothing
+WScript.Quit
+
+'如下是start_set.vbs
 on error resume Next
 Dim NewTargetPath,WshShell,fs,fl
 Dim currdir,creodir
@@ -31,8 +55,6 @@ if(fs.fileExists(pro_file)) then
 	NewTargetPath=pro_file
 Else
 	msgbox "安装失败，选择的目录:" & creodir & "可能不是Creo的text目录或目录下找到CONFIG.PRO"
-	set fs=nothing
-	set WshShell=nothing
 	Wscript.Quit
 End If 
 
@@ -64,10 +86,6 @@ fl.write ("allow_stop TRUE" & vbCrLf)
 fl.write ("end" & vbCrLf)
 fl.close
 '写结束ProcessFixture.dat
-
-'复制POSTGRES_dll文件
-fs.CopyFile  currdir & "\ProcessFixture\postgres_dll\*.*","c:\windows\sysnative\",true
-
 
 '在TEXT目录下config.pro中增加自动起动内容
 Dim arrFileLines()
@@ -108,6 +126,18 @@ if (fs.fileExists(pro_file)) then
 		set f2 = nothing
 	end if
 end if
+
+'复制POSTGRES_dll文件
+fs.CopyFile  currdir & "\ProcessFixture\postgres_dll\*.*","c:\windows\sysnative\",true
+'执行依赖文件
+WshShell.Run currdir & "\ProcessFixture\vcredist_x64.exe"
+WshShell.Run currdir & "\ProcessFixture\copydll.bat"
+
+'释放
+set fs=nothing
+set WshShell=nothing
+WScript.Quit
+
 '释放
 set fs=nothing
 set WshShell=nothing
