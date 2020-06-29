@@ -1,0 +1,3 @@
+	//增加到选中零件后的右键菜单
+	ProCmdActionAdd("ProcessATD_AutoDrawing_Act", action_02, uiProeImmediate, access_func1, PRO_B_TRUE, PRO_B_TRUE, &PushButton2_cmd_id);
+	status = ProMenubarmenuPushbuttonAdd("ActionMenu", "ProcessATD_AutoDrawing", "AutoDrawing", "AutoDrawing", NULL, PRO_B_TRUE, PushButton2_cmd_id, userMsg);
