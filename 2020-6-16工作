@@ -15,3 +15,94 @@
 	相似搜索功能在线部署、新服务器部署与备份（独立）：备份、切换			3
 	二期成本导出支持功能			15
 	3D装配图优化（界面解耦，当前对接CREO）			7
+
+//坐标装配，component_model(in)需要装配的模型,csysName(in)装配坐标的名称，asm_ref(in)
+ProError Hwassembly::CsysAsm(ProMdl component_model,ProName csysName,ProSelection asm_ref)
+{
+	ProMdl AsmMdl;
+	ProError err=PRO_TK_NO_ERROR;
+	ProAsmcomp  feature;
+	ProAsmcompconstraint* constraints;
+	ProAsmcompconstraint constraint;
+	ProIdTable c_id_table;
+	c_id_table[0] = -1;
+	//ProAsmcomppath comp_path;
+	ProModelitem comp_csys/*,asm_csys*/;
+	ProSelection  comp_sel;
+	ProMatrix init_pos={{ 1.0, 0.0, 0.0, 0.0 }, 
+	{0.0, 1.0, 0.0, 0.0}, 
+	{0.0, 0.0, 1.0, 0.0}, 
+	{/*500*/0.0, 0.0, 0.0, 1.0}};
+	//ProMdl  component_model;
+	//Pro3dPnt pnt[2];
+	//err=ProSolidOutlineGet((ProSolid)AsmMdl,pnt);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return err;
+	//double xdim=labs(pnt[0][0]-pnt[1][0]);
+	//double ydim=labs(pnt[0][1]-pnt[1][1]);
+	//double zdim=labs(pnt[0][2]-pnt[1][2]);
+	//double mindim=0;
+ //   err = ProMdlLoad(path, PRO_MDL_UNUSED,PRO_B_FALSE,&component_model);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return err;
+	//ProModelitem item;
+	//err=ProMdlToModelitem(component_model,&item);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return err;
+	//err = SingleParamChange(item,L"outl",mindim/5);
+	//err=ProSolidRegenerate ((ProSolid)component_model, PRO_REGEN_CAN_FIX);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return ;
+	//装配
+	err=ProMdlCurrentGet(&AsmMdl);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProAsmcompAssemble((ProAssembly)AsmMdl,(ProSolid)component_model,init_pos,&feature);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProArrayAlloc (0, sizeof (ProAsmcompconstraint), 1, (ProArray*)&constraints);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProAsmcompconstraintAlloc (&constraint);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProAsmcompconstraintTypeSet (constraint, PRO_ASM_CSYS);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProModelitemByNameInit (component_model,PRO_CSYS,csysName,&comp_csys);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProSelectionAlloc (NULL, &comp_csys, &comp_sel);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	//ProSelection *asm_sel;
+	//int n;
+	//err=ProSelect("csys",1,NULL,NULL,NULL,NULL,&asm_sel,&n);
+	//if(err!=PRO_TK_NO_ERROR||n<1)
+	//	return err;
+	//if(asm_sel[0]!=asmRef)
+	//	AfxMessageBox(_T("a"));
+	//err=ProModelitemByNameInit(AsmMdl,PRO_CSYS,L"ASM_DEF_CSYS",&asm_csys);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return ;
+	//err=ProAsmcomppathInit ((ProSolid)AsmMdl, c_id_table,0, &comp_path);
+	//if(err!=PRO_TK_NO_ERROR)
+	//	return ;
+	//err=ProSelectionAlloc (&comp_path, &asm_csys, &asm_sel/*&asm_sel*/);
+	err=ProAsmcompconstraintCompreferenceSet (constraint,comp_sel, PRO_DATUM_SIDE_YELLOW);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProAsmcompconstraintAsmreferenceSet (constraint,asm_ref, PRO_DATUM_SIDE_YELLOW);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProArrayObjectAdd ((ProArray*)&constraints, -1, 1, &constraint);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProAsmcompConstraintsSet (NULL,&feature,constraints);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	err=ProSolidRegenerate ((ProSolid)component_model, PRO_REGEN_CAN_FIX);
+	if(err!=PRO_TK_NO_ERROR)
+		return err;
+	return err;
+}
