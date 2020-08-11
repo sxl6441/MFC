@@ -1,0 +1,37 @@
+	CATSoftwareConfiguration* pConfig = new CATSoftwareConfiguration();
+	CATCGMPickOperator *pRay = CATCGMCreatePickOperator(*pConfig);
+	std::vector<Body_Str>oBodys;
+	AllPublicFun_xsong_.GetSolidBodyInPart(pDoc, "", oBodys);
+
+	for (int i = 0; i < (int)oBodys.size(); i++) {
+		CATBody *body_ = oBodys[i].body;
+		CATMathTransformation matrix;
+		pRay->AddBody(*body_, matrix, NULL, 0.1);
+	}
+	CATMathVector dirRay(1, 0, 0);
+	dirRay.Normalize();
+	pRay->Run(CATMathPoint(0.005, 0, 0), dirRay);
+
+	CATCGMPickOperatorResultIterator* pResultIterator = NULL;
+	pRay->SetOnlyFirstHit(false);
+	pRay->SetApertureRadius(0.01);
+	pRay->GetResult(pResultIterator);
+
+	pResultIterator->Begin();
+
+	while (pResultIterator->End()==false)
+	{
+		const CATCGMPickOperatorPickedObject* pPicledObject = pResultIterator->Get();
+		CATGeometry* pGeometry;
+		pPicledObject->GetPickedGeometry(pGeometry);
+		const char* name = pGeometry->IsA();
+		if (pGeometry->IsAKindOf(CATFace::ClassName()))
+		{
+			CATULONG32 nID = pGeometry->GetPersistentTag();
+			int asd = 0;
+		}
+		pResultIterator->operator++();
+
+	}
+	pConfig->Release();
+	pConfig = NULL;
