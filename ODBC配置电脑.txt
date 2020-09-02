@@ -1,0 +1,67 @@
+// ODBCDataSource.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include "ODBCDataSource.h"
+#include <odbcinst.h>//添加数据库的信息头文件
+#include <afxdb.h>//添加数据库的信息头文件
+#pragma comment(lib,"odbc32.lib")//添加数据库的信息库文件
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+
+// 唯一的应用程序对象
+
+CWinApp theApp;
+
+using namespace std;
+
+int main()
+{
+	int nRetCode = 0;
+
+	HMODULE hModule = ::GetModuleHandle(nullptr);
+
+	if (hModule != nullptr)
+	{
+		// 初始化 MFC 并在失败时显示错误
+		if (!AfxWinInit(hModule, nullptr, ::GetCommandLine(), 0))
+		{
+			// TODO: 更改错误代码以符合您的需要
+			wprintf(L"错误: MFC 初始化失败\n");
+			nRetCode = 1;
+		}
+		else
+		{
+			// TODO: 在此处为应用程序的行为编写代码。
+
+			/*注意:
+			配置ODBC数据源前要确保已安装数据库对应的ODBC驱动,另外VS启动时或exe启动时要以管理员身份运行,才能成功添加系统DSN
+			确保系统目录下有odbccp32.dll
+			工程平台分为Release模式下的x86和x64版本,工程属性设置在静态库中使用MFC
+			*/
+			BOOL ret;
+			ret = SQLConfigDataSource(NULL, ODBC_ADD_SYS_DSN, L"SQL Server", L"DSN=mds\0 SERVER=10.26.41.45\0 DATABASE=mds\0");//配置SQLServer下的DSN
+			//ret = SQLConfigDataSource(NULL, ODBC_ADD_SYS_DSN, L"MySQL ODBC 8.0 Unicode Driver", L"DSN=shadow\0 DESCRIPTION=shadow\0 UID=JAGUARSERVER\0 PWD=carl2019@HW\0 SERVER=10.26.41.250\0 PORT=3306\0 DATABASE=shadow\0");//配置MySQL下的DSN
+			ret = SQLConfigDataSource(NULL, ODBC_ADD_SYS_DSN, L"MySQL ODBC 8.0 Unicode Driver", L"DSN=shadow\0 SERVER=10.26.41.45\0 PORT=3306\0 DATABASE=shadow\0");//配置MySQL下的DSN
+			//if (!ret)
+			//{
+			//	AfxMessageBox(L"注册失败!");
+			//}
+			//else
+			//{
+			//	AfxMessageBox(L"注册成功!");
+			//}
+		}
+	}
+	else
+	{
+		// TODO: 更改错误代码以符合您的需要
+		wprintf(L"错误: GetModuleHandle 失败\n");
+		nRetCode = 1;
+	}
+
+	return nRetCode;
+}
