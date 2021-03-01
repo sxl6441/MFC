@@ -1,0 +1,22 @@
+BOOL   GetLogUser(CString&   strName) 
+{ 
+	BOOL   bRet   =   FALSE; 
+	strName   =   _T( " "); 
+
+	//for   xp   or   above 
+	TCHAR   *szLogName   =   NULL; 
+	DWORD   dwSize   =   0; 
+	if   (WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE, 
+		WTS_CURRENT_SESSION, 
+		WTSUserName, 
+		&szLogName, 
+		&dwSize)) 
+	{ 
+		strName   =   szLogName; 
+		strName.TrimRight();
+		strName.TrimLeft();
+		WTSFreeMemory(szLogName); 
+		bRet   =   TRUE; 
+	}
+	return   bRet; 
+}
