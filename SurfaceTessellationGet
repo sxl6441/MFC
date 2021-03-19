@@ -1,0 +1,123 @@
+//获取壁厚查检面信息
+ProError SurfaceTessellationGet(vector<WitSrfData> &partSrfs)
+{
+	ProError status(PRO_TK_NO_ERROR);
+	//partSrfs.clear();
+	//ProWindowRepaint(-1);
+	//ProSelection *p_sel_array;
+	//int  p_n_sels(0);
+	//ProSelect("surface", 2, NULL, NULL, NULL, NULL, &p_sel_array, &p_n_sels);
+	//if (p_n_sels != 2)
+	//	return status;
+	ProMdl mdl_current;
+	status = ProMdlCurrentGet(&mdl_current);
+	if (status != PRO_TK_NO_ERROR)
+		return status;
+	vector<ProSurface> vec_surface;
+	ProSolidSurfaceVisit((ProSolid)mdl_current, UserSurfaceVisitAction, NULL, (ProAppData)&vec_surface);
+	for (int m = 0; m<int(vec_surface.size())/*2*/; m++)
+	{
+		//ProModelitem srf_item;
+		//status = ProSelectionModelitemGet(p_sel_array[m], &srf_item);
+		ProSurface surface_(vec_surface[m]);
+		//status = ProGeomitemToSurface(&srf_item, &surface_);
+
+		ProSurfaceTessellationInput inputData_;
+		status = ProSurfacetessellationinputAlloc(&inputData_);
+
+		//status = ProSurfacetessellationinputChordheightSet(inputData_, 0.0);
+		//status = ProSurfacetessellationinputAnglecontrolSet(inputData_, 0.0);
+		////status = ProSurfacetessellationinputStepsizeSet(inputData_, 0.0);
+		status = ProSurfacetessellationinputAnglecontrolSet(inputData_, 0.0);
+		status = ProSurfacetessellationinputChordheightSet(inputData_, 0.01);
+		ProTessellation tessellation_;
+		status = ProSurfaceTessellationGet(surface_, inputData_, &tessellation_);
+		if (status != PRO_TK_NO_ERROR)
+		{
+			MessageBox(NULL, _T("三角化面错误!"), _T("错误"), MB_ICONERROR);
+			return PRO_TK_GENERAL_ERROR;
+		}
+		WitSrfData srfData;
+		WitPnt witPnt;
+		WitPntIndex pntIndex;
+
+		ProTriangle *triangles;  /// 三角形上点的索引
+		Pro3dPnt *vertices;      /// 面三角化后的所有点
+		ProVector *normals;      /// 法向分量
+
+		status = ProTessellationFacetsGet(tessellation_, &triangles);
+		if (status != PRO_TK_NO_ERROR) {
+			MessageBox(NULL, _T("三角化面时ProTessellationFacetsGet函数执行失败!"), _T("错误"), MB_ICONERROR);
+			return status;
+		}
+
+		status = ProTessellationVerticesGet(tessellation_, &vertices);
+		if (status != PRO_TK_NO_ERROR) {
+			MessageBox(NULL, _T("三角化面时ProTessellationVerticesGet函数执行失败!"), _T("错误"), MB_ICONERROR);
+			return status;
+		}
+
+		status = ProTessellationNormalsGet(tessellation_, &normals);
+		if (status != PRO_TK_NO_ERROR) {
+			MessageBox(NULL, _T("三角化面时ProTessellationNormalsGet函数执行失败!"), _T("错误"), MB_ICONERROR);
+			return status;
+		}
+
+		int n_vertices, n_normals, n_triangles;
+
+		status = ProArraySizeGet((ProArray)triangles, &n_triangles);
+
+		if (n_triangles <= 0)
+		{
+			MessageBox(NULL, _T("对面进行三角化后三角形个数小于1"), _T("错误"), MB_ICONERROR);
+			return status;
+		}
+
+		for (int i = 0; i < n_triangles; i++)
+		{
+			memcpy_s(pntIndex.TriIndex, 3 * sizeof(int), triangles[i], 3 * sizeof(int));
+			srfData.Triangles.push_back(pntIndex);
+		}
+
+		status = ProArraySizeGet((ProArray)vertices, &n_vertices);
+
+		for (int i = 0; i < n_vertices; i++)
+		{
+			memcpy_s(witPnt.Vertice, 3 * sizeof(double), vertices[i], 3 * sizeof(double));
+			srfData.Vertices.push_back(witPnt);
+		}
+
+		status = ProArraySizeGet((ProArray)normals, &n_normals);
+
+		for (int i = 0; i < n_normals; i++)
+		{
+			memcpy_s(witPnt.Vertice, 3 * sizeof(double), normals[i], 3 * sizeof(double));
+			srfData.Normals.push_back(witPnt);
+		}
+		ProGeomitemdata  *p_data_ptr;
+		ProSurfaceDataGet(surface_, &p_data_ptr);
+		memcpy_s(srfData.xyz_min, 3 * sizeof(double), p_data_ptr->data.p_surface_data->xyz_min, 3 * sizeof(double));
+		memcpy_s(srfData.xyz_max, 3 * sizeof(double), p_data_ptr->data.p_surface_data->xyz_max, 3 * sizeof(double));
+		ProGeomitemdataFree(&p_data_ptr);
+		srfData.IsPlane = true;
+		ProSrftype srfType(PRO_SRF_NONE);
+		ProSurfaceTypeGet(surface_, &srfType);
+		if (PRO_SRF_PLANE == srfType)
+			memcpy_s(srfData.dir, 3 * sizeof(double), normals[0], 3 * sizeof(double));
+		else
+		{
+			double centerPnt[3] = { (srfData.xyz_min[0] + srfData.xyz_max[0]) / 2,(srfData.xyz_min[1] + srfData.xyz_max[1]) / 2,(srfData.xyz_min[2] + srfData.xyz_max[2]) / 2 };
+			ProUvParam    uv_point;
+			ProSurfaceParamEval((ProSolid)mdl_current, surface_, centerPnt, uv_point);
+			ProVector xyz_point, deriv1[2], deriv2[3];
+			ProSurfaceXyzdataEval(surface_, uv_point, xyz_point, deriv1, deriv2, srfData.dir);
+			srfData.IsPlane = false;
+		}
+		srfData.m_area = 0.0;
+		ProSurfaceAreaEval(surface_, &srfData.m_area);
+		ProSurfaceIdGet(surface_, &srfData.srfId);
+		partSrfs.push_back(srfData);
+		status = ProSurfacetessellationinputFree(inputData_);
+	}
+	return PRO_TK_NO_ERROR;
+}
