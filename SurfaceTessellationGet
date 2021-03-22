@@ -1,3 +1,25 @@
+typedef struct wit_point
+{
+	double Vertice[3];
+}WitPnt;
+
+typedef struct wit_pnt_index
+{
+	int TriIndex[3];
+}WitPntIndex;
+
+typedef struct wit_srf_data
+{
+	bool IsPlane;//是否为平面
+	double dir[3];
+	double m_area;
+	int srfId;
+	double xyz_min[3];
+	double xyz_max[3];
+	vector<WitPntIndex> Triangles;
+	vector<WitPnt> Vertices;
+	vector<WitPnt> Normals;
+}WitSrfData;
 //获取壁厚查检面信息
 ProError SurfaceTessellationGet(vector<WitSrfData> &partSrfs)
 {
