@@ -1,0 +1,26 @@
+cbb_catalog	Domain	text	0	Antenna_Feeder
+	大类	varchar	255	天馈
+	Name	text	0	PS_Axes
+	小类	varchar	255	移相器转轴
+	Property	text	0	Dimension,Interface_Dimension,Remark
+	优选属性	varchar	255	外形尺寸,接口尺寸,备注
+	Owner	text	0	张三/c124568789
+	DataOwner	varchar	255	张三/c124568789
+				
+cbb_antenna_feeder_axes	EngName	varchar	255	Axes
+	ChnName	varchar	255	移相器转轴
+	Name	varchar	255	Axes
+	DWG_NO	varchar	255	DKBA80926613.prt
+	Dimension	varchar	255	Φ13*18.5
+	Interface_Dimension	varchar	255	外部接口5.6*5.6，3度锥度 内部接口7*7
+	Remark	varchar	255	Pla，PEI+30%GF(Ultem resin 2300)
+				
+cbb_installation_base_wedge	EngName	varchar	255	
+	ChnName	varchar	255	
+	Name	varchar	255	
+	DWG_NO	varchar	255	
+	Applied_environment	varchar	255	
+	Matched_cabinet_types	varchar	255	
+	Outer_diameter(mm)	varchar	255	
+	Remark	varchar	255	
+	Priority	varchar	255	
