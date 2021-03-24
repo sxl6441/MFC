@@ -1,0 +1,362 @@
+base_config_info	id	int	11	序列号
+	tool_name	varchar	20	模块名：MDS通用，自检，成本核算，版本比较等
+	variable_type	varchar	20	变量类型，如：MDS权限控制，MDS自检配置
+	variable_name	varchar	100	变量名称，如：MDS用户组
+	variable_value	varchar	255	变量值：如：autocheck.dll|cost.dll
+	remark	varchar	255	备注信息，按需填写
+				
+base_material_info	id	int	11	序列号
+	class	varchar	20	大类：主要有塑料，钢，包装材料，铜等
+	subclass	varchar	20	小类：如塑料包含PC，POM，PPE
+	name	varchar	50	材料名称
+	spec	varchar	50	材料规格，用于区分同一材料不同的加工类型
+	mach_type	varchar	20	材料加工类型：主要含塑胶，钣金，机加，压铸等
+	mat_class	varchar	20	材料加工类型：主要含塑胶，钣金，机加，压铸等
+	colour	varchar	100	材料颜色
+	thickness	varchar	100	材料规格：厚度，直径
+	density	float	0	材料密度
+	material_cost	float	0	材料单价
+	finish_cost	varchar	255	表处单价：同一表处在不同材料上单价不相同
+	finish	varchar	255	优选表处
+	finish_optional	varchar	255	可选表处
+	finish_colour	varchar	255	表处颜色
+	permission	varchar	255	材料使用权限
+				
+base_user_data	id	bigint	20	用户编号（主键，自增）
+	user_name	varchar	20	用户中文名
+	user_workid	varchar	20	用户华为工号（格式：m00445406，zwx816874）
+	department	varchar	50	用户所在最小部门名称
+	review_right	bit	1	1—具有自检审核权限，空白—没有
+	license_server_id	varchar	20	用户连接的许可证服务器地址
+	creo_module	varchar	255	用户能使用的许可证creo模块
+	business_admin	varchar	255	业务管理员角色（紧固件管理，成本管理…），允许业务管理员维护所属领域的数据表信息
+	business_permission	varchar	255	用户所属业务权限（含紧固件，材料，表处，CBB，UDF），如：室内柜，室外柜，射频模
+	mds_group	varchar	255	用户所在MDS组（控制用户能使用的MDS模块）
+	time_start	datetime	0	用户MDS权限生效日期
+	time_end	datetime	0	用户MDS权限失效日期
+	user_current_version	varchar	10	用户当前MDS版本
+	mds_latest_version	varchar	10	MDS最新版本
+	last_login_time	datetime	0	用户最近一次登录MDS时间
+	auto_update	bit	1	1-MDS自动推送最新版本到客户端
+	update_model	int	11	自动推送版本模式，根据不同的人推送不同内容
+	remarrk	varchar	255	备注信息，按需要填写
+				
+base_user_usagelog	ID	bigint	11	日志编号
+	IP	varchar	20	用户登录MDS的IP地址
+	WorkId	varchar	20	用户华为工号
+	StartTime	varchar	20	开始登录使用的时间
+	AccessPermission	varchar	3	是否通过权限认证yes是；no否
+				
+chech_init_groupname	drawing_name	varchar	50	图纸名称
+	group_type	varchar	50	组类别
+	rowguid	char	36	
+				
+check_ack_promotion	name	varchar	50	名称
+	归档类型	varchar	50	
+	promotion	varchar	50	
+	type	varchar	50	类别
+	pdesc	varchar	50	编码
+	version	varchar	50	版本
+	rowguid	char	36	
+				
+check_bolt_info	图号	varchar	50	
+	center	varchar	50	三维坐标
+	vector_e1	varchar	50	三维坐标
+	vector_e2	varchar	50	三维坐标
+	vector_e3	varchar	50	三维坐标
+	topcenter	varchar	50	三维坐标
+	diameter	varchar	50	螺栓直径
+	specification	varchar	50	螺栓规格
+				
+check_checklist_config	id	int	11	序列号
+	check_id	varchar	255	查检序号
+	class	varchar	255	大类
+	subclass	varchar	255	子类
+	question	varchar	255	产生的问题
+	judge_rule	varchar	255	判断准则
+	check_solution	varchar	255	查检解决方法
+	err_type_prototype	varchar	255	prototype错误类型
+	err_type_release	varchar	255	release错误类型
+	err_type_ec	varchar	255	EC错误类型
+	must_resolve	varchar	50	必须解决的问题
+	auto_check	varchar	50	自动检查
+	model_type	varchar	255	模型的类型
+	check_object	varchar	255	检查对象
+	checklist_owner	varchar	255	检查表所有者
+	design_document	varchar	255	设计文档
+	belong_tmg	varchar	255	所属tmg
+	product_config	varchar	255	产品配置
+	on_off	varchar	50	是否查检，1是查，0是不查
+	config_table_name	varchar	255	配置表名称
+	adapter_config	varchar	5000	适配器配置,随检的适配器加后缀_follow
+	help_link	varchar	255	帮助链接
+	have_follow	varchar	255	这条查检项是否有随检
+	follow_onoff	varchar	255	随检项开关
+				
+check_checklist_info	序号	int	11	
+	旧查检项ID	varchar	50	
+	旧类别ID	varchar	50	
+	新查检项ID	varchar	50	
+	报错信息ID	varchar	50	
+	大类	varchar	50	
+	小类	varchar	50	
+	问题描述	varchar	255	
+	查检准则	varchar	255	
+	查检逻辑	varchar	255	
+	查检对象	varchar	50	
+	查检规范	varchar	50	
+	所属TMG	varchar	20	
+	临时归档报错等级	varchar	10	
+	正式归档报错等级	varchar	10	
+	EC归档报错等级	varchar	10	
+	product	varchar	255	
+	未解决ERR	int	11	
+	未解决WRN	int	11	
+	未解决SUG	int	11	
+	已解决ERR	int	11	
+	已解决WRN	int	11	
+	已解决SUG	int	11	
+	文件数	int	11	
+	Y1	int	11	
+				
+check_combolt	name	varchar	50	名称
+	length	varchar	10	长度
+	angle	double	0	角度
+				
+check_cut	ID	int	11	序号
+	type	varchar	50	类别
+	size	varchar	50	尺寸大小
+	dia	double	0	直径
+				
+check_drawing_list_data	id	bigint	20	
+	文件名	varchar	50	
+	版本	varchar	50	
+	审核人	varchar	50	
+	自检人	varchar	50	
+	日期	varchar	50	
+	pdesc	varchar	50	
+	类型	varchar	50	
+	问题数	varchar	50	
+	未关闭问题数	varchar	50	
+	自检状态	varchar	50	
+	审核状态	varchar	50	
+	归档流程	varchar	50	
+	已计算	varchar	50	
+	备注	varchar	50	
+	已反馈问题数	varchar	50	
+	干涉自检	varchar	50	
+	产品类别	varchar	50	
+	fromsoft	varchar	50	
+				
+check_follow_question_data	id	bigint	20	自检问题序号（主键）
+	check_id	varchar	50	查检项编号
+	class	varchar	50	大类
+	subclass	varchar	50	小类
+	question_type	varchar	10	问题类型：已解决/未解决
+	question	varchar	255	问题描述：当前报错的原因
+	err_type	varchar	50	报错等级：SUG,WRN,ERR
+	judge_rule	varchar	200	判断准则：设计规范或者checklist原文
+	solution	varchar	100	解决措施：记录不解决的原因
+	review_info	varchar	100	审查信息
+	file_name	varchar	50	进行自检的文件名
+	first_version	varchar	20	问题首次出现的文件版本（取导出报表的小版本）
+	latest_version	varchar	20	最近一次自检的文件版本（取导出报表的小版本）
+	end_version	varchar	20	自检问题已解决对应的文件版本（只针对已解决问题）
+	fist_record_date	datetime	0	问题首次出现的日期（格式：2020-01-01 00:00:00）
+	latest_record_date	datetime	0	最近一次自检的日期
+	end_record_date	datetime	0	解决自检问题的日期
+	bom_code	varchar	50	8位物料编码，取最近一级组件编码
+	designer	varchar	20	自检人工号
+	reviewer	varchar	20	审核人工号
+	department	varchar	50	自检人所在最小部门名称
+	design_document	varchar	100	自检项所属设计规范，从自检项数据表读取
+	belong_tmg	varchar	255	自检项所属TMG，从自检项数据表获取
+	promotion_type	varchar	10	归档类型，取用户升级定义指定的归档类型
+	b_comfirm	bit	1	问题是否已反馈/已解决
+	b_export	bit	1	该模型文件是否已完成自检并导出报表
+	n_sheet_creo	varchar	255	二维图所在页数(creo模型自检)
+	num_creo	varchar	255	数量(creo模型自检)
+	center_creo	varchar	255	单击问题时模型定位坐标(creo模型自检)
+	pathIds_creo	longtext	0	单击问题时模型路线id(creo模型自检)
+	displayType_creo	longtext	0	问题所对应的特征类型(creo模型自检)
+	geomIds_creo	longtext	0	问题所对应的特征ID(creo模型自检)
+				
+check_geom_info	check_id	int	11	自检id
+	mdl_name	varchar	50	图号名
+	owner_name	varchar	50	图号所属名
+	geom_id	int	11	几何id
+	geom_type	int	11	几何类型
+	from_or_to	varchar	10	从哪里到哪里
+	comppathStr	varchar	50	组件零件字符串
+	pair_id	int	11	
+	rowguid	char	36	索引值
+				
+check_init_all_prts_information	文件名	varchar	50	文件名
+	产品类别	varchar	50	产品类别
+	antenna_type	varchar	50	天线类型
+	structure_type	varchar	50	结构类型
+	radiating_type	varchar	50	散热类型
+	front_e3	varchar	225	机箱正面
+	left_e3	varchar	225	机箱侧面
+	innerdoor_type	varchar	50	内门类型
+	outdoor_type	varchar	50	外门类型
+	sel_pnt	varchar	50	位置
+	heatsink_type	varchar	50	散热器类型
+	heatsink_structure	varchar	50	散热器结构
+	heatsink_form	varchar	50	散热形式
+	heatsink_chipsize	varchar	50	散热器尺寸
+	high_altitude_installation	varchar	50	高空安装
+	spring_pre_pressure	varchar	50	弹簧预压力
+	归档类型	varchar	50	归档类型
+	spring_pressure	varchar	50	弹簧压力
+	TIM2_type	varchar	50	
+	类型	varchar	50	借用类型，还是修复PDESC
+	pdesc	varchar	50	编码
+	fromsoft	varchar	50	哪种图纸zw,creo,catia
+				
+check_init_surface_grade	drawing_no_asm	varchar	50	asm图纸
+	drawing_no_prt	varchar	50	prt图纸
+	path	varchar	50	路径
+	surface_id	varchar	50	相邻面id
+	surface_grade	varchar	50	相邻面等级
+				
+check_intf_question	id	int	11	序列号
+	file_name	varchar	50	文件名
+	i_class	varchar	50	干涉类型
+	part1	varchar	50	零件1
+	part2	varchar	50	零件2
+	volume	double	0	体积
+	reason	varchar	200	原因
+	reviewer	varchar	50	审核人
+	confirm	tinyint	4	是否确认
+	designer	varchar	50	设计人
+	product	varchar	50	产品
+	record_date	datetime	0	报告日期
+	path_id1	varchar	50	零件1的路径
+	path_id2	varchar	50	零件2的路径
+	common_name1	varchar	50	零件1的common name
+	common_name2	varchar	50	零件2的common name
+				
+check_intf_review	id	int	11	序列号
+	file_name	varchar	50	文件名
+	version	varchar	20	版本
+	reviewer	varchar	50	审查人
+	date	datetime	0	日期
+	num_close	int	11	已关闭条数
+	num_unclose	int	11	未关闭条数
+	completed	tinyint	4	已完成
+	bReview	tinyint	4	二次审查
+	bQualified	tinyint	4	是否合格
+				
+check_log	id	int	11	自增主键
+	log	longtext	0	检查日志
+	info	longtext	0	
+	user	varchar	15	
+	date	datetime	0	
+	filename	varchar	50	
+				
+check_measure_distance	check_id	int	11	查检编号
+	check_info	text	0	查检的信息：如方孔条开档间距等于451mm或者500mm
+	From_info	varchar	50	起点信息：如Select surface
+	From_type	varchar	50	起点类型：如point；surface
+	To_info	varchar	50	末尾信息
+	To_type	varchar	50	末尾类型
+	ptc_common_name	varchar	50	ptc通用的名称: PBOM_CODE(16050013); 室外柜等
+	dialog_info	text	0	详细信息：如测量机柜门与机架之间的缝隙
+	picture	longblob	0	加载的模型图片
+	environment	int	11	环境编号
+	check_rule	char	20	查检通过的规则，如=451|500
+	from_msg	text	0	起点信息，如选择左方孔条内侧边缘
+	to_msg	text	0	末尾信息，如选择右方孔条内侧边缘
+				
+check_not_involve	check_id	int	11	自检id
+	file_name	varchar	50	图号名
+	rowguid	char	36	索引值
+				
+check_outdoorcabinet	data_key	varchar	50	数据键
+	data_value	longtext	0	数据值
+	data_type	varchar	50	数据类型
+	note	longtext	0	注释
+	check_number	char	10	查检编号
+				
+check_promotion_data	id	int	11	序列号
+	name	varchar	50	参与自检的文件名（去掉后缀）
+	parent_name	varchar	50	参与自检的最大组件文件名（去掉后缀）
+	version	varchar	20	参与自检的模型版本（如：A）
+	promotion_type	varchar	20	归档类型：prototype，release，EC
+	product_type	varchar	200	室外产品，室内产品
+	environment	varchar	20	升级定义用户所指定的环境（A,B,C,D）v
+	part_type	varchar	20	升级定义指定的结构件类型（I型/II型结构件）
+	surface_type	varchar	255	升级定义指定的曲面类型（path1|surface_id1,path2|surface_id2,…）
+	fromsoft	varchar	20	用于返回哪个软件出来的数据
+				
+check_question_data	id	bigint	20	自检问题序号（主键）
+	check_id	varchar	50	查检项编号
+	class	varchar	50	大类
+	subclass	varchar	50	小类
+	question_type	varchar	5	问题类型：已解决/未解决
+	question	varchar	100	问题描述：当前报错的原因
+	err_type	varchar	5	报错等级：SUG,WRN,ERR
+	judge_rule	varchar	100	判断准则：设计规范或者checklist原文
+	solution	varchar	100	解决措施：记录不解决的原因
+	review_info	varchar	50	审查信息
+	file_name	varchar	50	进行自检的文件名
+	first_version	varchar	10	问题首次出现的文件版本（取导出报表的小版本）
+	latest_version	varchar	10	最近一次自检的文件版本（取导出报表的小版本）
+	end_version	varchar	10	自检问题已解决对应的文件版本（只针对已解决问题）
+	fist_record_date	datetime	0	问题首次出现的日期（格式：2020-01-01 00:00:00）
+	latest_record_date	datetime	0	最近一次自检的日期
+	end_record_date	datetime	0	解决自检问题的日期
+	bom_code	varchar	20	8位物料编码，取最近一级组件编码
+	designer	varchar	20	自检人工号
+	reviewer	varchar	20	审核人工号
+	department	varchar	50	自检人所在最小部门名称
+	design_document	varchar	50	自检项所属设计规范，从自检项数据表读取
+	belong_tmg	varchar	50	自检项所属TMG，从自检项数据表获取
+	promotion_type	varchar	50	归档类型，取用户升级定义指定的归档类型
+	b_comfirm	bit	1	问题是否已反馈/已解决
+	b_export	bit	1	该模型文件是否已完成自检并导出报表
+	n_sheet_creo	varchar	10	二维图所在页数(creo模型自检)
+	num_creo	varchar	20	数量(creo模型自检)
+	center_creo	varchar	20	单击问题时模型定位坐标(creo模型自检)
+	pathIds_creo	longtext	0	单击问题时模型路线id(creo模型自检)
+	displayType_creo	longtext	0	问题所对应的特征类型(creo模型自检)
+	geomIds_creo	longtext	0	问题所对应的特征ID(creo模型自检)
+	fromsoft	varchar	50	哪个软件
+				
+check_rivet_thick	铆钉图号	varchar	50	
+	最小拉铆厚度	double	0	
+	最大拉铆厚度	double	0	
+				
+check_rivet_thickness_info	id	int	11	自检编号
+	file_name	varchar	50	图纸文件名
+	pname	varchar	50	铆钉产品名称，如standoff BSO-3.5M3-11.8
+	distance	double	0	
+	thickness	double	0	铆钉厚度
+	hole_dia	double	0	孔的直径
+	out_dia	double	0	外部直径
+	describtion	varchar	10	选择的优先级，如可选，优选等
+	distance2	double	0	
+	distance3	double	0	
+	thread_len	double	0	螺纹的长度
+				
+check_seldata	总装模型名称	varchar	50	
+	I型结构件名称	varchar	50	
+	总装模型类别	varchar	50	
+	环境	varchar	50	
+	rowguid	char	36	
+	fromsoft	varchar	20	用于返回哪个软件出来的数据
+				
+check_symbol	sym_name	varchar	50	符号名称
+	sym_function	varchar	50	符号方法
+	attach_type	varchar	50	参考类型
+				
+check_thread	id	smallint	6	序列号
+	spec	varchar	50	规格型号
+	dia	double	0	孔直径
+	dia_thread	double	0	螺纹孔直径
+				
+check_userpopedom	用户	text	0	
+	中文姓名	char	50	
+	所属业务	text	0	
+	序号	bigint	20	
