@@ -1,0 +1,416 @@
+cn_对象类别表	序号	varchar	100
+	对象类别名	varchar	100
+	级别	varchar	100
+	自身代号	varchar	100
+	父项代号	varchar	100
+	责任Owner	varchar	100
+	备注	varchar	100
+			
+cn_特征类别表	序号	varchar	100
+	特征类别名	varchar	100
+	级别	varchar	100
+	自身代号	varchar	100
+	父项代号	varchar	100
+	责任Owner	varchar	100
+	备注	varchar	100
+			
+cn_对象特征关系表	序号	varchar	100
+	对象	longtext	100
+	特征	longtext	100
+	关系	varchar	100
+	对象路标优先	longtext	100
+	备注	longtext	100
+	Owner	varchar	100
+			
+cn_对象对象关系表	序号	char	10
+	对象1	longtext	100
+	对象2	longtext	100
+	关系	varchar	100
+	对象1路标优先	longtext	100
+	备注	longtext	100
+	类别	longtext	100
+	OWNER	longtext	100
+			
+cn_对象对象接口表	序号	int	11
+	对象1	longtext	100
+	对象2	longtext	100
+	对象1接口	varchar	100
+	对象1路径	longtext	100
+	装配组件	varchar	100
+	备注	longtext	100
+	Owner	varchar	100
+			
+cn_特征对象关系表	序号	varchar	100
+	特征	longtext	100
+	对象	longtext	100
+	关系	varchar	100
+	特征路标优先	longtext	100
+	备注	longtext	100
+	Owner	varchar	100
+			
+cn_特征特征关系表	序号	varchar	100
+	特征1	longtext	100
+	特征2	longtext	100
+	关系	varchar	100
+	特征1路标优先	longtext	100
+	应用场景	varchar	100
+	备注	longtext	100
+	Owner	varchar	100
+			
+cn_互联数据统计表	ConnectFactor1	varchar	100
+	ConnectFactor2	varchar	100
+	MonthUseRate	int	11
+			
+cn_有效性数据统计表	图号	varchar	100
+	星级	char	10
+	相似零件数量	varchar	100
+	reduce状态	char	10
+cn_权限分配表	Product_Area	varchar	100
+	data_base	varchar	100
+	remark	char	10
+			
+cn_temp	图号	varchar	100
+	时间	varchar	100
+	星级	char	10
+	相似零件数量	varchar	100
+	Reduce状态	char	10
+			
+cn_帮助网址	帮助网址	longtext	255
+	备注	longtext	255
+			
+cn_对象_抽芯铆钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_弹垫	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_焊接螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_监控器件	序号	varchar	100
+	对象名称	longtext	100
+	图号	varchar	100
+	装配参照	longtext	100
+	路径	longtext	100
+	标签	longtext	100
+	尺寸	longtext	100
+	备注	longtext	100
+			
+cn_对象_监控器件安装件	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	路径	varchar	100
+	标签	longtext	100
+	尺寸	varchar	100
+	备注	longtext	100
+			
+cn_对象_拉铆螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_六角螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_门板cbb	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_配电器件	序号	varchar	100
+	对象名称	longtext	100
+	图号	longtext	100
+	装配参照	longtext	100
+	路径	longtext	100
+	标签	longtext	100
+	尺寸	longtext	100
+	备注	longtext	100
+			
+cn_对象_配电器件安装件	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	路径	varchar	100
+	标签	longtext	100
+	尺寸	varchar	100
+	备注	longtext	100
+			
+cn_对象_膨胀螺栓	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_平垫	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_普通螺钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_普通螺栓	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_其它螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_双阴六角支柱	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_松不脱螺钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_锁	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_消防器件	序号	varchar	100
+	对象名称	longtext	100
+	图号	varchar	100
+	装配参照	longtext	100
+	路径	longtext	100
+	标签	longtext	100
+	尺寸	longtext	100
+	备注	longtext	100
+			
+cn_对象_消防器件安装件	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	路径	longtext	100
+	标签	longtext	100
+	外形尺寸	varchar	100
+	备注	longtext	100
+			
+cn_对象_压铆螺钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_压铆螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_压铆螺母柱	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_阴阳螺钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_涨铆螺母	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	标签	longtext	100
+	备注	varchar	100
+			
+cn_对象_制冷器件	序号	varchar	100
+	对象名称	longtext	100
+	图号	longtext	100
+	装配参照	longtext	100
+	路径	longtext	100
+	标签	longtext	100
+	尺寸	longtext	100
+	备注	longtext	100
+			
+cn_对象_制冷器件安装件	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	路径	varchar	100
+	标签	longtext	100
+	尺寸	varchar	100
+	备注	longtext	100
+			
+cn_对象_自攻螺钉	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_自制螺钉	序号	varchar	100
+	对象名称	longtext	100
+	图号	varchar	100
+	装配参照	longtext	100
+	轴装配参照	longtext	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_对象_组合件	序号	varchar	100
+	对象名称	varchar	100
+	图号	varchar	100
+	装配参照	varchar	100
+	轴装配参照	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_沉头螺钉孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_沉头铆钉孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_方孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_方形槽	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_葫芦挂孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_门锁安装孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_通风网孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_腰形孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_预览模型	UDF名	varchar	100
+	预览模型名	varchar	100
+	备注	longtext	100
+			
+cn_特征_圆孔	序号	varchar	100
+	中文名称	varchar	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
+			
+cn_特征_涨铆孔	序号	varchar	100
+	中文名称	longtext	100
+	直径	varchar	100
+	宽	varchar	100
+	长	varchar	100
+	倒角	varchar	100
+	UDF名	varchar	100
+	标签	longtext	100
+	备注	longtext	100
