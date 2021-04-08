@@ -1,1 +1,60 @@
+	//要先cvxCmdFunc注册ExecMacro,I_asm_ref组件参照，I_comp_ref元件参照
+	//cvxCmdFunc("ExecMacro", (void*)ExecMacro, VX_CODE_GENERAL);
+	//int  ExecMacro(){
+	//	cvxCmdMacro("[vxSendEvtOpt,-1,0,1,2]", NULL);
+	//	return(0);
+	//}
+int PublicFunClass::CreateConstraInAsm(svxEntPath I_asm_ref, svxEntPath I_comp_ref, int ConsType, double I_offset)
+{
+	int status;
+	int data;
+	status = cvxDataInit("AsAlnAll2", &data);
+	if (status != 0) { return 1; }
+	svxData svxData_;
+	cvxDataZero(&svxData_);
+	svxData_.isNumber = 1;
+	svxData_.NumType = VX_NUM;
 
+	svxData_.Num = 0;
+	cvxDataSet(data, 4, &svxData_);
+	cvxDataSet(data, 6, &svxData_);
+	cvxDataSet(data, 11, &svxData_);
+	cvxDataSet(data, 26, &svxData_);
+	cvxDataSet(data, 27, &svxData_);
+	cvxDataSet(data, 28, &svxData_);
+	cvxDataSet(data, 29, &svxData_);
+	cvxDataSet(data, 30, &svxData_);
+	cvxDataSet(data, 38, &svxData_);
+	cvxDataSet(data, 90, &svxData_);
+
+	svxData_.Num = I_offset;
+	cvxDataSet(data, 3, &svxData_);
+
+	svxData_.Num = (double)ConsType;
+	cvxDataSet(data, 5, &svxData_);
+
+	svxData_.Num = 1.0;
+	cvxDataSet(data, 35, &svxData_);
+	cvxDataSet(data, 50, &svxData_);
+	cvxDataSet(data, 86, &svxData_);
+	cvxDataSet(data, 91, &svxData_);
+
+	cvxDataZero(&svxData_);
+	svxData_.isEntity = 1;
+	svxData_.entPath = I_asm_ref;
+	svxData_.idEntity = I_asm_ref.Id[I_asm_ref.Count - 1];
+	status = cvxDataSet(data, 48, &svxData_);
+	status = cvxDataSetPath(data, 48, &I_asm_ref);
+
+	cvxDataZero(&svxData_);
+	svxData_.isEntity = 1;
+	svxData_.entPath = I_comp_ref;
+	svxData_.idEntity = I_comp_ref.Id[I_comp_ref.Count - 1];
+	status = cvxDataSet(data, 49, &svxData_);
+	status = cvxDataSetPath(data, 49, &I_comp_ref);
+	cvxCmdBuffer("~ExecMacro", 0);
+	int out_data;
+	status = cvxCmdInput("AsAlnAll2", data, &out_data);
+	cvxCmdExec(out_data);
+	return 0;
+}
