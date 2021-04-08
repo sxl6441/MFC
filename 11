@@ -58,3 +58,19 @@ int PublicFunClass::CreateConstraInAsm(svxEntPath I_asm_ref, svxEntPath I_comp_r
 	cvxCmdExec(out_data);
 	return 0;
 }
+
+
+void GlobalCommonData::ActiveRootMdl(bool updateGui) {
+	svxEntPath top_path;
+	top_path.Count = 1;
+	top_path.Id[0] = -1;
+	cvxEntPathToRoot(&top_path);
+	top_path.Count = 2;
+	if (updateGui == true) {
+		cvxEntActivate(&top_path, 1, 0, 0);
+		cvxDispRedraw();
+	}
+	else {
+		cvxEntActivate(&top_path, 0, 0, 0);
+	}
+}
